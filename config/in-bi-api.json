@@ -1,0 +1,242 @@
+{
+	"domain": "intouch.capillary.co.in",
+	"defaultOrg": 1492,
+	"phaseGap": 60,
+	"timeRanges": [{
+		"start": "2019-05-12",
+		"end": "2019-09-20"
+	}],
+	"phases": [{
+		"segmentGap": 40,
+		"segments": [{
+			"type": "MULTIPLE-ORG-SAME-REQUEST",
+			"skip": false,
+			"orgIdList": [1040, 1039, 1006, 648, 655],
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_WISE_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"body": {"date":{"start":"2018-07-15","end":"2020-07-15","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"campaign.name","value":["200723_ATL_FreindsAndFamily_SMS","200723_ATL_BrandAmbassador_SMS","200722_ATL_Outfit_PUSH","200721_ATL_Casual_PUSH","200720_ATL_Latest_PUSH","200719_ATL_FamGlam_PUSH","200718_ATL_Dazzling_PUSH"],"operation":"includes"}]},"compare":false}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"body": {"date":{"start":"2020-06-15","end":"2020-07-15","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/dimensions/multi-fact?facts=[%22bill_lineitems%22]&time=%s",
+				"method": "GET",
+				"addTimestamp": true
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/dimensions/multi-fact?facts=[%22return_bill_lineitem%22]&time=%s",
+				"method": "GET",
+				"addTimestamp": true
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/dimensions/multi-fact?facts=[%22customer_summary%22]&time=%s",
+				"method": "GET",
+				"addTimestamp": true
+			}]
+		}, {
+			"type": "ONE-ORG-ONE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5da7202e2b8d421b527338d7?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 648
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5df7179edbc11415ed1e3378?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 655
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5ef06c22bb012b00272dd087?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1006
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5c052a95247afe45cdb2540f?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1039
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5df71f32e8fb1076289c8849?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1040
+			}]
+		}, {
+			"type": "ONE-ORG-MULTIPLE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/5daeaa1e0e926e290f2b0681?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5da8657231b26c7870d1a5df?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5da724f22b8d421b527338db?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5daed27a09f1ee7ac901e638?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5ddb80a33a107e7f5c31bf11?type=NORMAL"
+				],
+				"orgId": 648,
+				"body": {"date":{"start":"2020-07-15","end":"2020-07-21","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["Referral Webengage","redtag webadmin","RT_WIFI_UAE","Social","IVR OTP","Test Machine","Redtag Admin","uaecampaignpoints","MEDALLIA UAE TEST","Endless Aisle UAE","RT Mobile App","RTUAEIT","CAMPAIGN_POINTS_STORE","RT Mobile App Admin Hashtag","RT Mobile App Any Post hashtag","RT Mobile App Instagram","RT Mobile App Socialpoints","reco","RT Mobile App SocialShare","RT Mobile App Profile Complete","RT Dual App"],"operation":"excludes"},{"key":"event_zone_till.store_description","value":["Comparable"],"operation":"includes"},{"key":"event_user.ext_fld_std_str_12_43","value":["Westerner","not-interested","Others","Not Captured","Emirati","Arab Expat","Asian"],"operation":"includes"}]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"displayOptions":{"kpiOrder":["5b28baa5fb9ec7025ac66998","591d991181b3edcb4bd80072","5aa89e4e8d7ebb8c1d1b0eeb","5b28bd94fb9ec7f269c66998","5b28be278d7ebbc9685bd4a3","5ef120855159d314008b4571"],"dimensionOrder":[]},"pivotOptions":{"base":[],"pivot":[],"values":["5b28baa5fb9ec7025ac66998","591d991181b3edcb4bd80072","5aa89e4e8d7ebb8c1d1b0eeb","5b28bd94fb9ec7f269c66998","5b28be278d7ebbc9685bd4a3","5ef120855159d314008b4571"],"baseTimePeriod":false,"transposeBy":"kpis","showPivotRowTotal":false,"showPivotColumnTotal":false},"kpiFilters":{}}
+			}, {
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/5c052a06247afe45cdb2540d?type=NORMAL"
+				],
+				"orgId": 1039,
+				"body": {"date":{"start":"2020-07-15","end":"2020-07-21","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["SUR","Salalah Garden Mall","RT Al Khud","Al Khuwair","Seeb","Azaiba","Markaz Al Bahja","Nizwa","Sohar","Redtag Qurum City Center","RT Sohar City Center","RT SUR","RT Al Saadah Center","RT Mall of Muscat"],"operation":"includes"}]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}, {
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df71c8d2fa6601f97b7a3b6?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df71cf796d24a738c629f74?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df71d28dbc11415ed1e337e?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5ee9da6b63d5e70029ce73df?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5ee9d7eb2cf0090027a37393?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df72264dbc11415ed1e3394?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df7232bdbc11415ed1e3398?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5df7244edbc11415ed1e339e?type=NORMAL"
+				],
+				"orgId": 1040,
+				"body": {"date":{"start":"2020-07-15","end":"2020-07-21","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["RT Mobile App Admin Hashtag","RT Mobile App Instagram","RT Mobile App Profile Complete","RT Mobil App Social Share","RT Mobile App","RT Mobile App Socialpoints","RT Mobile App Any Post Hashtag","RT Dual App","CAMPAIGN_POINTS_STORE","MEDALLIA  Bahrain TEST","Endless Aisle Bahrain","social","ADMIN","RT_WIFI_BAHRAIN","IVR OTP"],"operation":"excludes"},{"key":"event_zone_till.store_description","value":["Comparable"],"operation":"includes"},{"key":"event_user.ext_fld_std_str_12_43","value":["Not Captured","not-interested","Bahraini","Arab Expat","Westerner","Others","Asian"],"operation":"includes"}]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}]
+		}, {
+			"type": "ONE-ORG-ONE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/data/exceldownload/5da7202e2b8d421b527338d7?entity=report",
+				"method": "POST",
+				"orgId": 648,
+				"body": {"dateRange":{"periodValue":"7","compareFilterType":"","baseFilterType":"day","compareDateRange":{},"baseDateRange":{"start":"2020-07-15","end":"2020-07-21"},"likeToLike":false,"compareMode":false,"type":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["Referral Webengage","redtag webadmin","RT_WIFI_UAE","Social","IVR OTP","Test Machine","Redtag Admin","uaecampaignpoints","MEDALLIA UAE TEST","Endless Aisle UAE","RT Mobile App","RTUAEIT","CAMPAIGN_POINTS_STORE","RT Mobile App Admin Hashtag","RT Mobile App Any Post hashtag","RT Mobile App Instagram","RT Mobile App Socialpoints","reco","RT Mobile App SocialShare","RT Mobile App Profile Complete","RT Dual App"],"operation":"excludes"},{"key":"event_zone_till.store_description","value":["Comparable"],"operation":"includes"},{"key":"event_user.ext_fld_std_str_12_43","value":["Westerner","not-interested","Others","Not Captured","Emirati","Arab Expat","Asian"],"operation":"includes"}]},"chartFeatures":{"5e68ca826b02620022e69da3":{"dimension":[]},"5ee9e6c12cf0090027a3739a":{"dimension":["item.inv_cf_5_3369","event_user.ext_fld_std_str_12_43"],"displayOptions":{"kpiOrder":["5b28bb7dfb9ec74360c66998"],"dimensionOrder":["item.inv_cf_5_3369","event_user.ext_fld_std_str_12_43"]},"pivotOptions":{"base":["item.inv_cf_5_3369","event_user.ext_fld_std_str_12_43"],"pivot":[],"values":["5b28bb7dfb9ec74360c66998"],"baseTimePeriod":false,"transposeBy":"","showPivotRowTotal":false,"showPivotColumnTotal":false}},"5daea7d287700222b5e5d344":{"dimension":[]},"5dad47319e012875c724ffd1":{"dimension":[]},"5da720c02b8d421b527338d8":{"dimension":[]},"5da98eb3d78f224b6c0572f4":{"dimension":[]},"5da720a99cf99b79d2996147":{"dimension":[]},"5daeaa1e0e926e290f2b0681":{"dimension":[],"displayOptions":{"kpiOrder":["5b28baa5fb9ec7025ac66998","591d991181b3edcb4bd80072","5aa89e4e8d7ebb8c1d1b0eeb","5b28bd94fb9ec7f269c66998","5b28be278d7ebbc9685bd4a3","5ef120855159d314008b4571"],"dimensionOrder":[]},"pivotOptions":{"base":[],"pivot":[],"values":["5b28baa5fb9ec7025ac66998","591d991181b3edcb4bd80072","5aa89e4e8d7ebb8c1d1b0eeb","5b28bd94fb9ec7f269c66998","5b28be278d7ebbc9685bd4a3","5ef120855159d314008b4571"],"baseTimePeriod":false,"transposeBy":"kpis","showPivotRowTotal":false,"showPivotColumnTotal":false}},"5ddb80a33a107e7f5c31bf11":{"dimension":[]},"5dad470ca6231f773e38954c":{"dimension":[]},"5daed27a09f1ee7ac901e638":{"dimension":["item.inv_cf_5_3369"],"displayOptions":{"kpiOrder":["593f9321fb9ec72111388653","5a7943a78d7ebb754aa77d0a","5b28bb7dfb9ec74360c66998","5b30ee308d7ebbee31f186b4","5a3a51278d7ebb7f6315e914","5b30f00bfb9ec7510d5b527f","5daee21938a1dedb20086e46"],"dimensionOrder":["item.inv_cf_5_3369"],"showPercentageTotal":{"5daee21938a1dedb20086e46":false,"5b30f00bfb9ec7510d5b527f":false}}},"5da8657231b26c7870d1a5df":{"dimension":["event_user.ext_fld_std_str_12_43"],"displayOptions":{"kpiOrder":["593f9321fb9ec72111388653","5a3a51278d7ebb7f6315e914","5b28bb7dfb9ec74360c66998","5a7943a78d7ebb754aa77d0a","5b30f00bfb9ec7510d5b527f","5b30ee308d7ebbee31f186b4","5b30f0668d7ebbe732f186b4","5daee21938a1dedb20086e46"],"dimensionOrder":["event_user.ext_fld_std_str_12_43"]},"pivotOptions":{"base":["event_user.ext_fld_std_str_12_43"],"pivot":[],"values":["593f9321fb9ec72111388653","5a3a51278d7ebb7f6315e914","5b28bb7dfb9ec74360c66998","5a7943a78d7ebb754aa77d0a","5b30f00bfb9ec7510d5b527f","5b30ee308d7ebbee31f186b4","5b30f0668d7ebbe732f186b4","5daee21938a1dedb20086e46"],"baseTimePeriod":false,"transposeBy":"","showPivotRowTotal":false,"showPivotColumnTotal":false}},"5da724f22b8d421b527338db":{"dimension":[]},"5da86b20ed5ac646fdfab586":{"dimension":["item.inv_cf_5_3369","event_user.ext_fld_std_str_12_43"],"pivotOptions":{"base":["item.inv_cf_5_3369","event_user.ext_fld_std_str_12_43"],"pivot":[],"values":["593f9321fb9ec72111388653"],"baseTimePeriod":false,"transposeBy":"","showPivotRowTotal":false,"showPivotColumnTotal":false}},"5da720863cc3d243cd61366d":{"dimension":[]}},"chartVisualizations":{},"rid":"5da7202e2b8d421b527338d7","orgName":"Redtag UAE"}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/exceldownload/5c052a95247afe45cdb2540f?entity=report",
+				"method": "POST",
+				"orgId": 1039,
+				"body": {"dateRange":{"periodValue":"7","compareFilterType":"","baseFilterType":"week","compareDateRange":{"end":"","start":""},"baseDateRange":{"start":"2020-07-15","end":"2020-07-21"},"likeToLike":false,"compareMode":false,"type":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["SUR","Salalah Garden Mall","RT Al Khud","Al Khuwair","Seeb","Azaiba","Markaz Al Bahja","Nizwa","Sohar","Redtag Qurum City Center","RT Sohar City Center","RT SUR","RT Al Saadah Center","RT Mall of Muscat"],"operation":"includes"}]},"chartFeatures":{"5c052a06247afe45cdb2540d":{"dimension":["event_zone_till.store_name","event_zone_till.external_id_2","event_zone_till.zone_name"]}},"chartVisualizations":{},"rid":"5c052a95247afe45cdb2540f","orgName":"Redtag OMAN"}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/exceldownload/5df71f32e8fb1076289c8849?entity=report",
+				"method": "POST",
+				"orgId": 1040,
+				"body": {"dateRange":{"periodValue":"7","compareFilterType":"","baseFilterType":"day","compareDateRange":{"end":"","start":""},"baseDateRange":{"start":"2020-07-15","end":"2020-07-21"},"likeToLike":false,"compareMode":false,"type":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"event_zone_till.store_name","value":["RT Mobile App Admin Hashtag","RT Mobile App Instagram","RT Mobile App Profile Complete","RT Mobil App Social Share","RT Mobile App","RT Mobile App Socialpoints","RT Mobile App Any Post Hashtag","RT Dual App","CAMPAIGN_POINTS_STORE","MEDALLIA  Bahrain TEST","Endless Aisle Bahrain","social","ADMIN","RT_WIFI_BAHRAIN","IVR OTP"],"operation":"excludes"},{"key":"event_zone_till.store_description","value":["Comparable"],"operation":"includes"},{"key":"event_user.ext_fld_std_str_12_43","value":["Not Captured","not-interested","Bahraini","Arab Expat","Westerner","Others","Asian"],"operation":"includes"}]},"chartFeatures":{"5df71da32fa6601f97b7a3ba":{"dimension":[]},"5ee9d7eb2cf0090027a37393":{"dimension":["item.inv_cf_5_3402","event_user.ext_fld_std_str_12_43"]},"5df7244edbc11415ed1e339e":{"dimension":["item.inv_cf_5_3402"],"displayOptions":{"dimensionOrder":["item.inv_cf_5_3402"],"kpiOrder":["593f9321fb9ec72111388653","5a7943a78d7ebb754aa77d0a","5b28bb7dfb9ec74360c66998","5b30ee308d7ebbee31f186b4","5a3a51278d7ebb7f6315e914","5b30f00bfb9ec7510d5b527f","5daee21938a1dedb20086e46"],"showPercentageTotal":{"5b30f00bfb9ec7510d5b527f":false,"5daee21938a1dedb20086e46":false}}},"5df71d53dbc11415ed1e337f":{"dimension":[]},"5df71dd096d24a738c629f77":{"dimension":[]},"5df71cf796d24a738c629f74":{"dimension":[]},"5df71d28dbc11415ed1e337e":{"dimension":[]},"5df71c8d2fa6601f97b7a3b6":{"dimension":[]},"5df71d7b2fa6601f97b7a3b9":{"dimension":[]},"5e27dd80a081903df97ee549":{"dimension":[]},"5ee9da6b63d5e70029ce73df":{"dimension":[]},"5df7232bdbc11415ed1e3398":{"dimension":["event_user.ext_fld_std_str_12_43"]},"5df724aadbc11415ed1e33a6":{"dimension":["item.inv_cf_5_3402","event_user.ext_fld_std_str_12_43"],"displayOptions":{"kpiOrder":["593f9321fb9ec72111388653"],"dimensionOrder":["item.inv_cf_5_3402","event_user.ext_fld_std_str_12_43"]},"pivotOptions":{"base":["item.inv_cf_5_3402"],"pivot":["event_user.ext_fld_std_str_12_43"],"values":["593f9321fb9ec72111388653"],"baseTimePeriod":false,"transposeBy":"dimensions","showPivotRowTotal":true,"showPivotColumnTotal":true}},"5df72264dbc11415ed1e3394":{"dimension":[]}},"chartVisualizations":{},"rid":"5df71f32e8fb1076289c8849","orgName":"Redtag BAHRAIN"}
+			}]
+		}, {
+			"type": "ONE-ORG-ONE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5ef04d4cb5ce3000278bcc44?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1849
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5eb50d8fadadec0022f66b74?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1849
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/5eb2a85ec07fe20024ef4a58?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 1849
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/exceldownload/5eb50d8fadadec0022f66b74?entity=report",
+				"method": "POST",
+				"orgId": 1849,
+				"body": {"dateRange":{"periodValue":"","compareFilterType":"","baseFilterType":"custom","compareDateRange":{"end":"","start":""},"baseDateRange":{"start":"2020-01-01","end":"2020-07-21"},"likeToLike":false,"compareMode":false,"type":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"chartFeatures":{"5eb50ce6e1cde70022843b9b":{"dimension":["event_date.day_of_month"]}},"chartVisualizations":{},"rid":"5eb50d8fadadec0022f66b74","orgName":"CP All"}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/exceldownload/5eb2a85ec07fe20024ef4a58?entity=report",
+				"method": "POST",
+				"orgId": 1849,
+				"body": {"dateRange":{"periodValue":"","compareFilterType":"","baseFilterType":"custom","compareDateRange":{"end":"","start":""},"baseDateRange":{"start":"2020-01-01","end":"2020-07-21"},"likeToLike":false,"compareMode":false,"type":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"chartFeatures":{"5ea01aacc6e0b30022110811":{"dimension":["event_date.month","event_zone_till.store_name","event_date.day_of_month"]}},"chartVisualizations":{},"rid":"5eb2a85ec07fe20024ef4a58","orgName":"CP All"}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/5ea01aacc6e0b30022110811?type=NORMAL",
+				"method": "POST",
+				"orgId": 1849,
+				"body": {"date":{"start":"2020-07-10","end":"2020-07-21","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/5eb50ce6e1cde70022843b9b?type=NORMAL",
+				"method": "POST",
+				"orgId": 1849,
+				"body": {"date":{"start":"2020-07-08","end":"2020-07-21","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_WISE_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"orgId": 1849,
+				"body": {"date":{"start":"2018-07-20","end":"2020-07-20","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[{"key":"campaign.name","value":["ฺBday test - (Pmax/Ptk)","Test sms sender","Recurring_bdy","Test facebook","Dummy_ Line Campaign Jul","Gateway Test","Member Day - Jul","Test111","Dummy_campaign","dummy_camp_2"],"operation":"includes"}]},"compare":false}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"orgId": 1849,
+				"body": {"date":{"start":"2020-06-20","end":"2020-07-20","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false}
+			}]
+		}, {
+			"type": "ONE-ORG-ONE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/59647b2c80bdef0ffa18bde3?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 486
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/596714aa80bdef0ffa18bde9?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 486
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"orgId": 486,
+				"body": {"date":{"start":"2020-06-20","end":"2020-07-20","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/stores/count?date={%22start%22:%222019-07-01%22,%22end%22:%222020-07-23%22}&compare=false&compareDimension={%22dimension%22:[],%22selected%22:false}&time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 486
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/5ec0ca4282ef2000238859fd?type=NORMAL",
+				"method": "POST",
+				"orgId": 486,
+				"body": {"date":{"start":"2020-07-17","end":"2020-07-23","dateType":"WTD"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{},"multiDate":[{"start":"2000-01-01","end":"2020-07-23","type":"ITD"},{"start":"2020-07-01","end":"2020-07-23","type":"MTD"}]}
+			}]
+		}, {
+			"type": "ONE-ORG-MULTIPLE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964afb4f4ef980ff5c2d001?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964b79d80bdef0ffa18bde4?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964c51a3941a60fe96210b5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965c7b5003e0e0fe12484e3?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965c6b63941a60fe96210b6?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cc573941a60fe96210b7?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cffc3941a60fe96210b8?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cf6b003e0e0fe12484e4?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dbe5003e0e0fe12484e5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dd6b80bdef0ffa18bde5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dccd003e0e0fe12484e6?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59647a1e80bdef0ffa18bde2?type=NORMAL"
+				],
+				"orgId": 486,
+				"body": {"date":{"start":"2020-07-01","end":"2020-07-23","dateType":"MTD"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}, {
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/59671338f4ef980ff5c2d008?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/596712f1003e0e0fe12484ef?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59a6629dc433d202fe829461?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59a66340c433d202fe829462?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a0457fd9be16f4b099a0745?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a043c2fb03a774b169e7699?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a54644d5ea5061edaf0906d?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a743e33328a1c0c419c8c58?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5b1f7db04d42197a4ea7f3de?type=NORMAL"
+				],
+				"orgId": 486,
+				"body": {"date":{"start":"2020-01-01","end":"2020-07-23","dateType":"YTD"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}]
+		}]
+	}]
+}

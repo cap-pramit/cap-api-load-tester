@@ -1,0 +1,81 @@
+{
+	"domain": "eu.intouch.capillarytech.com",
+	"defaultOrg": 100323,
+	"phaseGap": 10,
+	"timeRanges": [{
+		"start": "2017-04-12",
+		"end": "2017-08-20"
+	}, {
+		"start": "2020-03-01",
+		"end": "2020-05-31"
+	}, {
+		"start": "2019-01-03",
+		"end": "2020-01-03"
+	}],
+	"phases": [{
+		"segmentGap": 5,
+		"segments": [{
+			"type": "ONE-ORG-ONE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/59647b2c80bdef0ffa18bde3?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 100323
+			}, {
+				"url": "https://%s/arya/api/v1/bi/metadata/reports/596714aa80bdef0ffa18bde9?time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 100323
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/charts/identifier/CAMPAIGN_PERFORMANCE?type=NORMAL&time=%s",
+				"method": "POST",
+				"addTimestamp": true,
+				"orgId": 100323,
+				"body": {"date":{"start":"2020-06-20","end":"2020-07-20","dateType":"custom"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false}
+			}, {
+				"url": "https://%s/arya/api/v1/bi/data/reports/stores/count?date={%22start%22:%222019-07-01%22,%22end%22:%222020-07-23%22}&compare=false&compareDimension={%22dimension%22:[],%22selected%22:false}&time=%s",
+				"method": "GET",
+				"addTimestamp": true,
+				"orgId": 100323
+			}]
+		}, {
+			"type": "ONE-ORG-MULTIPLE-REQUEST",
+			"skip": false,
+			"calls": [{
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964afb4f4ef980ff5c2d001?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964b79d80bdef0ffa18bde4?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5964c51a3941a60fe96210b5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965c7b5003e0e0fe12484e3?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965c6b63941a60fe96210b6?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cc573941a60fe96210b7?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cffc3941a60fe96210b8?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965cf6b003e0e0fe12484e4?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dbe5003e0e0fe12484e5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dd6b80bdef0ffa18bde5?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5965dccd003e0e0fe12484e6?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59647a1e80bdef0ffa18bde2?type=NORMAL"
+				],
+				"orgId": 100323,
+				"body": {"date":{"start":"2020-07-01","end":"2020-07-23","dateType":"MTD"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}, {
+				"method": "POST",
+				"urls": [
+					"https://%s/arya/api/v1/bi/data/reports/charts/59671338f4ef980ff5c2d008?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/596712f1003e0e0fe12484ef?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59a6629dc433d202fe829461?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/59a66340c433d202fe829462?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a0457fd9be16f4b099a0745?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a043c2fb03a774b169e7699?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a54644d5ea5061edaf0906d?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5a743e33328a1c0c419c8c58?type=NORMAL",
+					"https://%s/arya/api/v1/bi/data/reports/charts/5b1f7db04d42197a4ea7f3de?type=NORMAL"
+				],
+				"orgId": 100323,
+				"body": {"date":{"start":"2020-01-01","end":"2020-07-23","dateType":"YTD"},"filters":{"dimensionFilterExpression":"","dimensionFilter":[]},"compare":false,"dimension":[],"extraDimension":[],"compareDimension":{"dimension":[],"selected":false},"migrationDetails":{},"overlapOptions":{},"scdOptions":{},"sortOptions":[],"kpiSpecificDateOptions":{},"kpiFilters":{}}
+			}]
+		}]
+	}]
+}

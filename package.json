@@ -1,0 +1,27 @@
+{
+  "name": "@capillarytech/load-tester",
+  "version": "0.0.1",
+  "description": "api load tester",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js",
+    "in": "node index.js in",
+    "sg": "node index.js sg",
+    "eu": "node index.js eu",
+    "cn": "node index.js cn",
+    "clear-cache": "node clear-cache.js"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "cap-pramit",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "3.7.2",
+    "csv-write-stream": "2.0.0",
+    "jsonfile": "6.0.1",
+    "moment": "2.27.0",
+    "request": "2.88.2",
+    "request-promise": "4.2.6"
+  }
+}
