@@ -11,3 +11,6 @@ Releases:
 5.0.1
 5.0.2
 6.0.0
+
+Test tag cut:
+v1.0
