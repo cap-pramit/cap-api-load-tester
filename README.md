@@ -17,3 +17,4 @@ v7.0.0
 v7.0.1
 
 Testing hotfix
+v7.0.2
