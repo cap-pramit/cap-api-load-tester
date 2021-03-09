@@ -15,3 +15,4 @@ Releases:
 Test tag cut:
 v7.0.0
 v7.0.1
+v7.0.2
