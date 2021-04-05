@@ -18,3 +18,6 @@ v7.0.1
 
 Testing hotfix
 v7.0.2
+
+Last version:
+8.2.0
