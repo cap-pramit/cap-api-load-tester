@@ -20,4 +20,7 @@ Testing hotfix
 v7.0.2
 
 Last version:
-8.2.0
+9.0.0
+
+Last hotfix version:
+9.0.1
