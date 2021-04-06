@@ -24,3 +24,6 @@ Last version:
 
 Last hotfix version:
 9.0.1
+
+Test release
+10.0.0
