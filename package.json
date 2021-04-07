@@ -1,6 +1,6 @@
 {
   "name": "@capillarytech/load-tester",
-  "version": "0.0.1",
+  "version": "10.0.2",
   "description": "api load tester",
   "main": "index.js",
   "scripts": {
