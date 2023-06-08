@@ -17,8 +17,8 @@ const init = (region = 'in') => {
 		method: 'POST',
 		json: true,
 		body: {
-			username: regionDetails.user,
-			password: regionDetails.password
+			username: process.env.INTOUCH_USERNAME,
+			password: process.env.INTOUCH_PASSWORD
 		}
 	};
 	options.url = utils.parseString(options.url, moment().valueOf());
