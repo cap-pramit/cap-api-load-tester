@@ -156,6 +156,7 @@ const getAllBooks = (request, response) => {
         .skip(skip)
         .limit(limit)
         .exec((err, books) => {
+          console.log(books);
           if (err) {
             reject(err);
           } else {
