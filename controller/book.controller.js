@@ -9,13 +9,12 @@ const {
 
 class Book {
   constructor({
-    book_id,
+    book_id = 0,
     book_name,
     book_author,
     book_genre,
     total_count = 0,
     current_count = 0,
-    request = [],
   }) {
     this.book_id = book_id;
     this.book_name = book_name;
@@ -23,7 +22,6 @@ class Book {
     this.book_genre = book_genre;
     this.total_count = total_count;
     this.current_count = current_count;
-    this.request = request;
   }
 }
 
@@ -56,15 +54,16 @@ const returnBook = async (bookId, userId) => {
       bookCollection.findOne({ _id: bookId }, (err, doc) => {
         if (err) reject(err);
         else {
-          // console.log(doc)
-          bookCollection.update(
-            { _id: bookId },
-            {
-              $pull: { borrowers: { userId: userId } },
-              $inc: { current_count: 1 },
-            },
-            {}
-          );
+          const newArr = doc?.borrowers.filter((obj) => obj.userId !== userId);
+          doc.current_count = doc.current_count + 1;
+          doc.borrowers = newArr;
+          if (doc?.requests?.length > 0) {
+            const item = doc.requests[0];
+            doc.requests.shift();
+            doc.borrowers.push(item);
+            doc.current_count = doc.current_count - 1;
+          }
+          bookCollection.update({ _id: bookId }, doc, {});
           resolve(doc);
         }
       });
@@ -82,7 +81,6 @@ const getAllRequestedBooks = (userId) => {
       if (err) {
         reject(err);
       } else {
-        // console.log(books)
         resolve(books);
       }
     });
@@ -96,11 +94,9 @@ const cancelRequest = async (bookId, userId) => {
       bookCollection.findOne({ _id: bookId }, (err, doc) => {
         if (err) reject(err);
         else {
-          bookCollection.update(
-            { _id: bookId },
-            { $pull: { requests: { userId: userId } } },
-            {}
-          );
+          const newArr = doc.requests.filter((obj) => obj.userId !== userId);
+          doc.requests = newArr;
+          bookCollection.update({ _id: bookId }, doc, {});
           resolve(doc);
         }
       });
@@ -299,4 +295,5 @@ module.exports = {
   getAllRequestedBooks,
   cancelRequest,
   returnBook,
+  insertBooks,
 };
