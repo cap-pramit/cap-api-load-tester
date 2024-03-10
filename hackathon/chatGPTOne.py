@@ -6,6 +6,7 @@ import openai
 import asyncio
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
 origins = [
@@ -192,7 +193,7 @@ def create_journey_template(request: CreateJourneyRequest):
     userId = request.userId
     orgId = request.orgId
     headers = {
-        "X_ADIONA_API_KEY": "adiona_ui_6eb4175f-75a7-4691-b973-7c30455058ff",
+        "X_ADIONA_API_KEY": os.environ['ADIONA_API_KEY'],
         "X_LOGGED_IN_USER_ID": "{}".format(userId),
         "orgId": "{}".format(orgId),
         "Content-Type": "application/json"
@@ -218,7 +219,7 @@ if __name__ == "__main__":
     asyncio.run(in_context_training(args.file_path))
 
     # Initialize OpenAI with API key
-    initialize_openai("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")  # need to be replaced by os.getenv
+    initialize_openai(os.environ['OPEN_AI_KEY'])  # need to be replaced by os.getenv
 
     # Run FastAPI app with uvicorn (asynchronous worker)
     import uvicorn

@@ -495,7 +495,8 @@ Explanation of the Above Example JSON payload 3:
 	The 2nd decision path connects to the engagement block with blockId "6" using its nextBlockId reference. If the user does not qualify any of decision path criteria then he will move to the remainder path. The remainder path of the decision block connects to the end block with blockId "4" using its remainderBlockId reference.
 	The engagement block with blockId "5" connects to the end block with blockId "7" using its remainderBlockId reference. The engagement block with blockId "6" connects to the end block with blockId "8" using its remainderBlockId reference.
 
-Additional Context:MOST IMPORTANT: whenever you are asked to create any journey template considering some audience attribute such as delivery rate use you general intelligence to choosed correct block
+Additional Context:
+MOST IMPORTANT: whenever you are asked to create any journey template considering some audience attribute such as delivery rate use you general intelligence to choosed correct block
 Please follow the context in the attached journeyContext.txt file and understand the Example JSON payload of journey meta template creation API. Now generate a sample JSON payload  with decision block by strictly following the field definition in the context for journey meta template creation API
 {
     "name": "Sample Journey Meta Template",
