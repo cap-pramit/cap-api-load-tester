@@ -10,7 +10,10 @@ import os
 
 app = FastAPI()
 origins = [
-    "http://localhost:8000"
+    "http://localhost:8000",
+    "https://devenv-crm.cc.capillarytech.com",
+    "https://crm-nightly-new.cc.capillarytech.com",
+    "https://crm-staging-new.cc.capillarytech.com"
 ]
 app.add_middleware(
     CORSMiddleware,
