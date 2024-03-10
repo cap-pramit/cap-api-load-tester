@@ -23,12 +23,7 @@ const port = 3000;
 // Middleware to parse JSON in the request body
 app.use(express.json());
 
-app.use(
-  cors({
-    "origin": "*",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-  })
-);
+app.use(cors());
 //Secret key for the JWT
 const Secret_Key = process.env.SECRET_KEY;
 
@@ -238,17 +233,17 @@ app.post("/books/borrow/:bookId/:borrower", verifyToken, async (req, res) => {
 });
 
 // Endpoint to approve a new book request
-app.post("/books/new_request/approve/", verifyToken, async (req, res) => {
-  const requestId = req.body._id;
-  const data = req.body;
-  try {
-    const books = await approveBook(requestId, data);
-    res.status(200);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Internal Server Error" });
-  }
-});
+// app.post("/books/new_request/approve/", verifyToken, async (req, res) => {
+//   const requestId = req.body._id;
+//   const data = req.body;
+//   try {
+//     const books = await approveBook(requestId, data);
+//     res.status(200);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send({ error: "Internal Server Error" });
+//   }
+// });
 
 // Endpoint to reject a new book request
 
@@ -349,26 +344,25 @@ app.post("/books/requests/new-request", verifyToken, async (req, res) => {
   });
 });
 
-// Endpoint to approve a new book request
-app.post("/books/request/approve/:id", verifyToken, async (req, res) => {
-  const id = req.params.id;
+// Endpoint to add a new book to database
+app.post("/books/add_book", verifyToken, async (req, res) => {
+  const data = req.body;
+  data.total_count = parseInt(data.total_count);
+  data.current_count = parseInt(data.current_count);
   try {
-    // write adding logic here
+    const newBook = {
+      book_name: data.book_name,
+      book_author: data.book_author,
+      total_count: data.total_count,
+      current_count: data.current_count,
+      book_genre: data.book_genre,
+    };
+    const book = await bookCollection.insertBooks(newBook);
+    await approveBook(data._id);
+    res.status(200).send(book);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-// Endpoint to reject a new book request
-
-app.post("/books/request/reject/:id", verifyToken, async (req, res) => {
-  const id = req.params.id;
-  try {
-    // write adding logic here
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send({ error: "Internal Server Error" });
   }
 });
 

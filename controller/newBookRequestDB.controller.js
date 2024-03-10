@@ -3,21 +3,12 @@ const path = require("path");
 const moment = require("moment");
 
 class BookRequest {
-  constructor({
-    book_name,
-    book_author,
-    email,
-    date,
-    state,
-    cancel_reason = "",
-    data = {},
-  }) {
+  constructor({ book_name, book_author, email, date, state, data = {} }) {
     this.book_name = book_name;
     this.book_author = book_author;
     this.email = email;
     this.date = date;
     this.state = state || "Pending";
-    this.cancel_reason = cancel_reason;
     this.data = data;
   }
 }
@@ -51,8 +42,6 @@ const initializeDatabase = async () => {
         book_author: "Harper Lee",
         email: "sample1@example.com",
         date: getCurrentDate(),
-        state: "Rejected",
-        cancel_reason: "Book already exists in the library",
       }),
       new BookRequest({
         book_name: "1984",
@@ -169,7 +158,7 @@ const insertFromAPI = (book) => {
 };
 
 //approve a book
-const approveBook = async (requestId, data) => {
+const approveBook = async (requestId) => {
   console.log(requestId);
   return new Promise(async (resolve, reject) => {
     try {
@@ -178,7 +167,7 @@ const approveBook = async (requestId, data) => {
         else {
           bookRequestsDB.update(
             { _id: requestId },
-            { ...doc, data: data, state: "Approved" },
+            { ...doc, state: "Approved" },
             {}
           );
           resolve(doc);

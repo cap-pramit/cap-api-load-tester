@@ -1,25 +1,25 @@
-{"book_id":1,"book_name":"To Kill a Mockingbird","book_author":"Harper Lee","book_genre":"Fiction","total_count":5,"current_count":1,"requests":[],"_id":"0aKfnXFE5WkPRk5l","borrowers":[]}
-{"book_id":4,"book_name":"Unlock Your Potential: A Guide to Personal Growth","book_author":"Samantha Green","book_genre":"Self-Help","total_count":2,"current_count":1,"requests":[],"_id":"3aLc5qv0oPOHHyWs","borrowers":[{"userId":"rkfbqk6lsMCBOVt5"}]}
-{"book_id":7,"book_name":"Finding Your Inner Strength","book_author":"David King","book_genre":"Self-Help","total_count":6,"current_count":2,"requests":[],"_id":"3tb6U3yMhpUH9JJr","borrowers":[{"userId":"rkfbqk6lsMCBOVt5","borrowedDate":{"$$date":1708694848971}}]}
-{"book_id":25,"book_name":"The Kite Runner","book_author":"Khaled Hosseini","book_genre":"Historical Fiction","total_count":8,"current_count":5,"requests":[],"_id":"4hI9EEKunsqlCXFz","borrowers":[{"userId":"rkfbqk6lsMCBOVt5","borrowedDate":{"$$date":1708694863724}}]}
-{"book_id":19,"book_name":"The Alchemist","book_author":"Paulo Coelho","book_genre":"Fiction","total_count":9,"current_count":6,"requests":[],"_id":"4jN091PrTSZUfzZr"}
-{"book_id":5,"book_name":"Mindfulness: Embracing the Present Moment","book_author":"Michael Hayes","book_genre":"Self-Help","total_count":11,"current_count":10,"requests":[],"_id":"5oClw8RZCssLFW4u"}
-{"book_id":23,"book_name":"The Hunger Games","book_author":"Suzanne Collins","book_genre":"Young Adult","total_count":6,"current_count":3,"requests":[],"_id":"AaYdWMlKzQf6RREl"}
-{"book_id":12,"book_name":"Pride and Prejudice","book_author":"Jane Austen","book_genre":"Romance","total_count":6,"current_count":3,"requests":[],"_id":"EMhhDdYbGorfOt8w"}
-{"book_id":10,"book_name":"Achieving Your Goals: A Roadmap to Success","book_author":"Emma White","book_genre":"Self-Help","total_count":2,"current_count":0,"requests":[{"userId":"rkfbqk6lsMCBOVt5","requestDate":{"$$date":1708694825670}}],"_id":"MjIyRfdYORVvlhGX"}
-{"book_id":22,"book_name":"The Adventures of Sherlock Holmes","book_author":"Arthur Conan Doyle","book_genre":"Mystery","total_count":11,"current_count":7,"requests":[],"_id":"NvA1mw5f2BGCCoen","borrowers":[{"userId":"rkfbqk6lsMCBOVt5","borrowedDate":{"$$date":1708694887760}}]}
-{"book_id":13,"book_name":"The Catcher in the Rye","book_author":"J.D. Salinger","book_genre":"Fiction","total_count":4,"current_count":2,"requests":[],"_id":"PYVQpj9UfYbs7Gwy"}
-{"book_id":8,"book_name":"Emotional Intelligence: Mastering Your Emotions","book_author":"Sophie Johnson","book_genre":"Self-Help","total_count":5,"current_count":2,"requests":[],"_id":"SvQaYofTf8Q8M0uR"}
-{"book_id":16,"book_name":"The Lord of the Rings","book_author":"J.R.R. Tolkien","book_genre":"Fantasy","total_count":12,"current_count":10,"requests":[],"_id":"TVkW8BlgVFq0vMEv"}
-{"book_id":20,"book_name":"Brave New World","book_author":"Aldous Huxley","book_genre":"Science Fiction","total_count":5,"current_count":2,"requests":[],"_id":"VzQ8e9d5E9dHJ5eH"}
-{"book_id":14,"book_name":"The Hobbit","book_author":"J.R.R. Tolkien","book_genre":"Fantasy","total_count":10,"current_count":8,"requests":[],"_id":"ePMXRsSioN99wYVI"}
-{"book_id":24,"book_name":"The Road","book_author":"Cormac McCarthy","book_genre":"Dystopian","total_count":4,"current_count":2,"requests":[],"_id":"eV7TcSHyhxyJGcVR"}
-{"book_id":3,"book_name":"Five Point Someone","book_author":"Chetan Bhagat","book_genre":"Fiction","total_count":3,"current_count":0,"requests":[],"_id":"ey5j7KIdYU3hJK4Q","request":[{"userId":"123","reserveDate":{"$$date":1708687211483}}]}
-{"book_id":18,"book_name":"The Da Vinci Code","book_author":"Dan Brown","book_genre":"Thriller","total_count":7,"current_count":4,"requests":[],"_id":"k2d3CyrwfD2KSy6s"}
-{"book_id":9,"book_name":"The Art of Happiness","book_author":"Nathan Phillips","book_genre":"Self-Help","total_count":5,"current_count":2,"requests":[],"_id":"mITnSZBSjcMHZ5z2"}
-{"book_id":6,"book_name":"The Power of Positive Thinking","book_author":"Emily Carter","book_genre":"Self-Help","total_count":15,"current_count":0,"requests":[{"userId":"rkfbqk6lsMCBOVt5","requestDate":{"$$date":1708694958054}}],"_id":"nSWQOAFHic5m1Xqv","request":[{"userId":"123","reserveDate":{"$$date":1708687195878}}]}
-{"book_id":11,"book_name":"The Great Gatsby","book_author":"F. Scott Fitzgerald","book_genre":"Fiction","total_count":8,"current_count":5,"requests":[],"_id":"pNhpCzCvQfHs52TP"}
-{"book_id":17,"book_name":"Harry Potter and the Sorcerer's Stone","book_author":"J.K. Rowling","book_genre":"Fantasy","total_count":15,"current_count":14,"requests":[],"_id":"qLPcJFLLzUT4lP73"}
-{"book_id":15,"book_name":"Moby-Dick","book_author":"Herman Melville","book_genre":"Adventure","total_count":3,"current_count":1,"requests":[],"_id":"tf8KSecs68Z3VH0S"}
-{"book_id":21,"book_name":"The Picture of Dorian Gray","book_author":"Oscar Wilde","book_genre":"Gothic Fiction","total_count":4,"current_count":1,"requests":[],"_id":"uY5SZIn1tXXe0wUi","borrowers":[{"userId":"rkfbqk6lsMCBOVt5","borrowedDate":{"$$date":1710994139522}}]}
-{"book_id":2,"book_name":"1984","book_author":"George Orwell","book_genre":"Science Fiction","total_count":7,"current_count":1,"requests":[],"_id":"yO7epMFNNv1yO7Ks","borrowers":[{"userId":"rkfbqk6lsMCBOVt5"}]}
+{"book_id":1,"book_name":"To Kill a Mockingbird","book_author":"Harper Lee","book_genre":"Fiction","total_count":5,"current_count":4,"_id":"7d9qwpoaA3K1gE5l"}
+{"book_id":2,"book_name":"1984","book_author":"George Orwell","book_genre":"Science Fiction","total_count":7,"current_count":2,"_id":"V3WO6GGtBAslRote"}
+{"book_id":3,"book_name":"Five Point Someone","book_author":"Chetan Bhagat","book_genre":"Fiction","total_count":3,"current_count":0,"_id":"LYsbmBbuev2opE58"}
+{"book_id":4,"book_name":"Unlock Your Potential: A Guide to Personal Growth","book_author":"Samantha Green","book_genre":"Self-Help","total_count":2,"current_count":2,"_id":"TFFRN5j2pxsziNhw"}
+{"book_id":5,"book_name":"Mindfulness: Embracing the Present Moment","book_author":"Michael Hayes","book_genre":"Self-Help","total_count":11,"current_count":10,"_id":"7IX7YR0tOMLXJLVW"}
+{"book_id":6,"book_name":"The Power of Positive Thinking","book_author":"Emily Carter","book_genre":"Self-Help","total_count":15,"current_count":0,"_id":"lwwtqt8UQtQebtHF"}
+{"book_id":7,"book_name":"Finding Your Inner Strength","book_author":"David King","book_genre":"Self-Help","total_count":6,"current_count":3,"_id":"P4lVDghAk2BXBm4q"}
+{"book_id":8,"book_name":"Emotional Intelligence: Mastering Your Emotions","book_author":"Sophie Johnson","book_genre":"Self-Help","total_count":5,"current_count":2,"_id":"EgheKLXDXoK6EmgI"}
+{"book_id":9,"book_name":"The Art of Happiness","book_author":"Nathan Phillips","book_genre":"Self-Help","total_count":5,"current_count":2,"_id":"SvvIDjMP0Zb2QQN8"}
+{"book_id":10,"book_name":"Achieving Your Goals: A Roadmap to Success","book_author":"Emma White","book_genre":"Self-Help","total_count":2,"current_count":0,"_id":"0kFGaJ3xzC6TFNEu"}
+{"book_id":11,"book_name":"The Great Gatsby","book_author":"F. Scott Fitzgerald","book_genre":"Fiction","total_count":8,"current_count":5,"_id":"eANNiBV3fUJNcdBO"}
+{"book_id":12,"book_name":"Pride and Prejudice","book_author":"Jane Austen","book_genre":"Romance","total_count":6,"current_count":3,"_id":"bX63HMzD72QlSkzP"}
+{"book_id":13,"book_name":"The Catcher in the Rye","book_author":"J.D. Salinger","book_genre":"Fiction","total_count":4,"current_count":2,"_id":"Id5kHvxfPzKQh7nt"}
+{"book_id":14,"book_name":"The Hobbit","book_author":"J.R.R. Tolkien","book_genre":"Fantasy","total_count":10,"current_count":8,"_id":"I7RHK9f7sv40hoW7"}
+{"book_id":15,"book_name":"Moby-Dick","book_author":"Herman Melville","book_genre":"Adventure","total_count":3,"current_count":1,"_id":"cHYzEX7NnuTyFIQl"}
+{"book_id":16,"book_name":"The Lord of the Rings","book_author":"J.R.R. Tolkien","book_genre":"Fantasy","total_count":12,"current_count":10,"_id":"BztWi0hF5kc20yYq"}
+{"book_id":17,"book_name":"Harry Potter and the Sorcerer's Stone","book_author":"J.K. Rowling","book_genre":"Fantasy","total_count":15,"current_count":14,"_id":"88hlnWbdEUhP9cW2"}
+{"book_id":18,"book_name":"The Da Vinci Code","book_author":"Dan Brown","book_genre":"Thriller","total_count":7,"current_count":4,"_id":"cLw6pH7fdlpZi2Pp"}
+{"book_id":19,"book_name":"The Alchemist","book_author":"Paulo Coelho","book_genre":"Fiction","total_count":9,"current_count":6,"_id":"s7KMLbNaiMOpx36H"}
+{"book_id":20,"book_name":"Brave New World","book_author":"Aldous Huxley","book_genre":"Science Fiction","total_count":5,"current_count":2,"_id":"TBrrGjscXqfy91Ps"}
+{"book_id":21,"book_name":"The Picture of Dorian Gray","book_author":"Oscar Wilde","book_genre":"Gothic Fiction","total_count":4,"current_count":1,"_id":"C6SZLbgEcyMTtXVG"}
+{"book_id":22,"book_name":"The Adventures of Sherlock Holmes","book_author":"Arthur Conan Doyle","book_genre":"Mystery","total_count":11,"current_count":8,"_id":"29ClsHxsOqN9e8S8"}
+{"book_id":23,"book_name":"The Hunger Games","book_author":"Suzanne Collins","book_genre":"Young Adult","total_count":6,"current_count":3,"_id":"NaVgE0064PefAHTC"}
+{"book_id":24,"book_name":"The Road","book_author":"Cormac McCarthy","book_genre":"Dystopian","total_count":4,"current_count":2,"_id":"rmjqACjcppY9SXdb"}
+{"book_id":25,"book_name":"The Kite Runner","book_author":"Khaled Hosseini","book_genre":"Historical Fiction","total_count":8,"current_count":6,"_id":"JbyvMMfpe3m4cZq0"}
