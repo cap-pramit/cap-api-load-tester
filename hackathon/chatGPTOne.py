@@ -193,7 +193,7 @@ def create_journey_template(request: CreateJourneyRequest):
     userId = request.userId
     orgId = request.orgId
     headers = {
-        "X_ADIONA_API_KEY": os.environ['ADIONA_API_KEY'],
+        "X_ADIONA_API_KEY": os.getenv('ADIONA_API_KEY'),
         "X_LOGGED_IN_USER_ID": "{}".format(userId),
         "orgId": "{}".format(orgId),
         "Content-Type": "application/json"
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     asyncio.run(in_context_training(args.file_path))
 
     # Initialize OpenAI with API key
-    initialize_openai(os.environ['OPEN_AI_KEY'])  # need to be replaced by os.getenv
+    initialize_openai(os.getenv('OPEN_AI_KEY'))  # need to be replaced by os.getenv
 
     # Run FastAPI app with uvicorn (asynchronous worker)
     import uvicorn
