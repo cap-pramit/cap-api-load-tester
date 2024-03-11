@@ -1,0 +1,563 @@
+Example JSON payload My journey meta template with welcome journey objective:
+
+
+{
+	"name" : "welcome journey meta template 1",
+	"description" : "welcome journey meta template 1",
+	"objective" : "welcome journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "6",
+			"blockName": "congratulations sms block 1",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "8"
+		},
+		{
+			"blockId": "7",
+			"blockName": "coupon reminder sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "congratulations sms block 2",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "12"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block 1",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "6",
+			"remainderBlockId": "7"
+		},
+		{
+			"blockId": "9",
+			"blockName": "wait for coupon redemption block 2",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "10",
+			"remainderBlockId": "11"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "8"
+		},
+		{
+			"blockId": "11"
+		},
+		{
+			"blockId": "12"
+		}
+	]
+}
+
+Explanation of the Above Example JSON payload 1 for journey meta template with welcome journey objective:
+	The above journey meta template is a welcome journey template which can be used by different brands to welcome newly registered customers by sending welcome message and issuing welcome incentives.
+	Here the above welcome journey meta template starts with a user event based entry block with blockId "1" and user event type REGISTRATION, which connects to the welcome sms engagement block with blockId "2" using its nextBlockId reference. The welcome sms engagement block with blockId "2" connects to a wait for duration block with blockId "3" using its nextBlockId reference.
+	The user is then awaited for 1 day (mentioned in waitPeriodInDays field) in wait for duration block with blockId "3" and then connected to the next block id "4" i.e. issue coupon sms block. In issue coupon sms block with block id "4", a coupon is issued to user and the issued coupon details is sent to the user through sms communication. This issue coupon sms block with block id "4"
+	is then connected to wait for coupon redemption block 1 with block id "5" and wait for event type COUPON_REDEMPTION. In this wait for coupon redemption block 1 with block id "5" user is awaited at max 7 days (mentioned in waitPeriodInDays field) untill the user redeem the coupon. If the user redeem the coupon he will be moved to the congratulations sms block "6" using nextBlockId field reference.
+	If the user does not redeem the coupon within 7 days then he will be moved to coupon reminder sms block with blockId "7" using remainderBlockId field reference. From congratulations sms block 1 with blockId "6" the user will move to end block with blockId "8" and his welcome journey will end here. From coupon reminder sms block with blockId "7" user will move to wait for coupon redemption block 2 with blockId "9" using nextBlockId field reference.
+	The user will again be awaited at max 3 days in this block till he redeem the coupon. If the user redeem the coupon within the mentioned wait duration i.e. 3 days then he will be moved to the congratulations sms block 2 with blockId "10" using nextBlockId field reference. If the user does not redeem the coupon within 3 days then he will be moved to end block with blockId "11" and the his welcome journey will end here.
+	From congratulations sms block 2 with blockId "10" the user will move to end block with blockId "12" and his welcome journey will end here.
+
+
+Additional Context:
+	1. 	The journey meta template can be considered as a direct acyclic graph where each block is a node of the graph. entry block is the node which should always be the root of the graph and end blocks are the nodes which should always be the leaf nodes of the graph.
+	2.	Engagement block with engagementType ISSUE_COUPON_MESSAGE works as engagement as well as issue coupon block. Here coupon is issued and coupon details is communicated to the user.
+		Similarly Engagement block with engagementType ISSUE_PROMOTION_MESSAGE works as engagement as well as issue promotion block. Here promotion is issued and promotion details is communicated to the user.
+	3. 	The welcome journeys generally starts with customer registration based entry followed by a welcome message. After this a short waiting time and then sending a sms with incentive issued details. After this waiting for redemption event for a relevant period of time.
+		If the redemption happens within the specified waiting period then send a congratulations message and end the journey. If the redemption does not happen within the specified waiting period then send an expiry reminder message and then again wait for some time for
+		the redemption to happen and finally end the journey.
+{
+	"name" : "Welcome Journey Template for Newly Registered Customers",
+	"description" : "A journey template designed to welcome newly registered customers",
+	"objective" : "welcome journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "6",
+			"blockName": "congratulations sms block 1",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "8"
+		},
+		{
+			"blockId": "7",
+			"blockName": "coupon reminder sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "congratulations sms block 2",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "12"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block 1",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "6",
+			"remainderBlockId": "7"
+		},
+		{
+			"blockId": "9",
+			"blockName": "wait for coupon redemption block 2",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "10",
+			"remainderBlockId": "11"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "8"
+		},
+		{
+			"blockId": "11"
+		},
+		{
+			"blockId": "12"
+		}
+	]
+}
+{
+	"name" : "Welcome Journey Template for Newly Registered Customers",
+	"description" : "A journey template designed to welcome newly registered customers",
+	"objective" : "welcome journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "6",
+			"blockName": "congratulations email block 1",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "8"
+		},
+		{
+			"blockId": "7",
+			"blockName": "coupon reminder email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "congratulations email block 2",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "12"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block 1",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "6",
+			"remainderBlockId": "7"
+		},
+		{
+			"blockId": "9",
+			"blockName": "wait for coupon redemption block 2",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "10",
+			"remainderBlockId": "11"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "8"
+		},
+		{
+			"blockId": "11"
+		},
+		{
+			"blockId": "12"
+		}
+	]
+}
+{
+	"name" : "Welcome Journey Template for Newly Registered Customers",
+	"description" : "A journey template designed to welcome newly registered customers",
+	"objective" : "welcome journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "6",
+			"blockName": "congratulations sms block 1",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "8"
+		},
+		{
+			"blockId": "7",
+			"blockName": "coupon reminder sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "congratulations sms block 2",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "12"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block 1",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "6",
+			"remainderBlockId": "7"
+		},
+		{
+			"blockId": "9",
+			"blockName": "wait for coupon redemption block 2",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "10",
+			"remainderBlockId": "11"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "8"
+		},
+		{
+			"blockId": "11"
+		},
+		{
+			"blockId": "12"
+		}
+	]
+}
+{
+	"name" : "Welcome Journey Template for Newly Registered Customers",
+	"description" : "A journey template designed to welcome newly registered customers",
+	"objective" : "welcome journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "6",
+			"blockName": "congratulations email block 1",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "8"
+		},
+		{
+			"blockId": "7",
+			"blockName": "coupon reminder email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "congratulations email block 2",
+			"engagementChannel": "EMAIL",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "12"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block 1",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "6",
+			"remainderBlockId": "7"
+		},
+		{
+			"blockId": "9",
+			"blockName": "wait for coupon redemption block 2",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "10",
+			"remainderBlockId": "11"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "8"
+		},
+		{
+			"blockId": "11"
+		},
+		{
+			"blockId": "12"
+		}
+	]
+}
+{
+	"name" : "Audience List Journey Template",
+	"description" : "Journey template focusing on engaging with a specific audience list",
+	"objective" : "sample journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "audience based entry block",
+		"entryCriteriaType": "AUDIENCE_BASED",
+		"audienceId": "specific-audience-list-123",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "special offer email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "ISSUE_PROMOTION_MESSAGE",
+			"nextBlockId": "3"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "end block 1"
+		}
+	]
+}
+{
+	"name" : "Audience List Journey Template with Decision Block",
+	"description" : "Journey template focusing on engaging with a specific audience list and decision based on total transaction amount",
+	"objective" : "sample journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "audience based entry block",
+		"entryCriteriaType": "AUDIENCE_BASED",
+		"audienceId": "specific-audience-list-123",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "special offer email block",
+			"engagementChannel": "EMAIL",
+			"engagementType": "ISSUE_PROMOTION_MESSAGE",
+			"nextBlockId": "3"
+		}
+	],
+	"decisionBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "decision block based on total transaction amount",
+			"decisionPaths": [
+				{
+					"leftOperand": "TOTAL_TRANSACTION_VALUE_IN_LAST_30_DAYS",
+					"operator": "GREATER_THAN_EQUALS_TO",
+					"rightOperand": 1000,
+					"nextBlockId": "4"
+				},
+				{
+					"leftOperand": "TOTAL_TRANSACTION_VALUE_IN_LAST_30_DAYS",
+					"operator": "LESS_THAN",
+					"rightOperand": 1000,
+					"nextBlockId": "5"
+				}
+			],
+			"remainderBlockId": "6"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "4",
+			"blockName": "end block 1"
+		},
+		{
+			"blockId": "5",
+			"blockName": "end block 2"
+		},
+		{
+			"blockId": "6",
+			"blockName": "end block 3"
+		}
+	]
+}
+
+prompt: Please follow the context and understand the Example of My Journey JSON payload of journey meta template creation API. Now generate a sample JSON payload by strictly following the field definition in the context for journey meta template creation API, create single engagement block audience based on journey where the audience has 50% EMAIL delivery rate and 70% SMS delivery rate 
+Response: {
+	"name" : "SMS Engagement Journey",
+	"description" : "Journey template focusing on SMS communication",
+	"objective" : "sample journey",
+	"entryBlock" : {
+		"blockId": "1",
+		"blockName": "audience based entry block",
+		"entryCriteriaType": "AUDIENCE_BASED",
+		"audienceId": "specific-audience-list-123",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "special offer sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "ISSUE_PROMOTION_MESSAGE",
+			"nextBlockId": "3"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "end block 1"
+		}
+	]
+} 
