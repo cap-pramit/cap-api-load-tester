@@ -51,15 +51,18 @@ def read_context_from_file(directory_path):
         return f"Error reading context from files: {str(e)}"
 
 
-def write_context_to_file(directory_path, response_content):
+def write_context_to_file(directory_path, response_content, isAppendOnly="a"):
     try:
         files = [f for f in os.listdir(directory_path) if f.endswith(".txt")]
         if files:
             last_file_path = os.path.join(directory_path, files[-1])
-            with open(last_file_path, 'a', encoding='utf-8') as file:
+            with open(last_file_path, isAppendOnly, encoding='utf-8') as file:
                 file.write("\n")  # Add a newline before appending the response
                 file.write(response_content)
-            print(f"Response written to the last file: {last_file_path}")
+            if isAppendOnly == "a":
+                print(f"Response written to the last file: {last_file_path}")
+            else:
+                print(f"Response replace to the last file: {last_file_path}")
         else:
             print("No text files found in the specified directory.")
     except Exception as e:
@@ -155,7 +158,10 @@ async def send_prompt(request: PromptRequest):
                                           f"Also if the user asks for a different incentive type (promotion, coupon etc) "
                                           f"and different engagement block type (SMS, EMAIL etc) you need to refer STRICTLY to"
                                           f"the mentioned 'My journey meta template with welcome journey objective' "
-                                          f"structures to answer."},
+                                          f"structures to answer. \n"
+                                          f"IMPORTANT: Next block id and remainder block id should be unique across "
+                                          f"journey meta template blocks i.e. two different blocks can not point to the same block."},
+
             {"role": "system", "content": "Giving you the context below carefully read the whole the context and "
                                           "you every time you will answer you need to keep everything in mind from "
                                           "this context only strictly.\n"
@@ -175,6 +181,7 @@ async def send_prompt(request: PromptRequest):
 
         # Write the updated context back to all files in the directory
         write_context_to_file("chat_history", "prompt: {} \n".format(prompt) + "Response: {} \n".format(str(model_response)))
+        write_context_to_file(args.directory_path, "prompt: {} \n".format(prompt) + "Response: {} \n".format(str(model_response)),isAppendOnly="w")
         return JSONResponse(content={"model_response": model_response})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

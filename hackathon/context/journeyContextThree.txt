@@ -1,0 +1,97 @@
+
+prompt: after the last wait for event block add a coupon redemption congrats message sms block if coupon redemption is done by the user
+Response: Here's a sample journey template with an additional coupon redemption congrats message SMS block after the last wait for event block if the coupon redemption is done by the user:
+
+```json
+{
+	"name": "Sample Journey Template with Additional Congrats SMS Block",
+	"description": "A journey template for welcoming newly registered users with a single welcome SMS, a 1-day wait period, an issue coupon SMS block, a wait for event block for coupon redemption, a coupon redemption congrats message SMS block, a coupon expiry reminder SMS block, an additional wait for event block for coupon redemption, and an additional coupon redemption congrats message SMS block",
+	"objective": "welcome journey",
+	"entryBlock": {
+		"blockId": "1",
+		"blockName": "registration event based entry block",
+		"entryCriteriaType": "USER_EVENT_BASED",
+		"userEventType": "REGISTRATION",
+		"nextBlockId": "2"
+	},
+	"engagementBlocks": [
+		{
+			"blockId": "2",
+			"blockName": "welcome sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "WELCOME_MESSAGE",
+			"nextBlockId": "3"
+		},
+		{
+			"blockId": "4",
+			"blockName": "issue coupon sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "ISSUE_COUPON_MESSAGE",
+			"nextBlockId": "5"
+		},
+		{
+			"blockId": "8",
+			"blockName": "coupon redemption congrats message sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "9"
+		},
+		{
+			"blockId": "10",
+			"blockName": "coupon expiry reminder sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REMINDER_MESSAGE",
+			"nextBlockId": "11"
+		},
+		{
+			"blockId": "14",
+			"blockName": "additional coupon redemption congrats message sms block",
+			"engagementChannel": "SMS",
+			"engagementType": "COUPON_REDEMPTION_CONGRATULATIONS_MESSAGE",
+			"nextBlockId": "15"
+		}
+	],
+	"waitForDurationBlocks": [
+		{
+			"blockId": "3",
+			"blockName": "wait for duration block",
+			"waitPeriodInDays": 1,
+			"nextBlockId": "4"
+		}
+	],
+	"waitForEventBlocks": [
+		{
+			"blockId": "5",
+			"blockName": "wait for coupon redemption block",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 7,
+			"nextBlockId": "8",
+			"remainderBlockId": "10"
+		},
+		{
+			"blockId": "11",
+			"blockName": "additional wait for coupon redemption block",
+			"waitForEventType": "COUPON_REDEMPTION",
+			"waitPeriodInDays": 3,
+			"nextBlockId": "14",
+			"remainderBlockId": "13"
+		}
+	],
+	"endBlocks": [
+		{
+			"blockId": "6"
+		},
+		{
+			"blockId": "9"
+		},
+		{
+			"blockId": "13"
+		},
+		{
+			"blockId": "15"
+		}
+	]
+}
+```
+
+In this journey template, after the last wait for event block with blockId "11", an additional coupon redemption congrats message SMS block with blockId "14" is added. The last wait for event block connects to the additional coupon redemption congrats message SMS block using its nextBlockId reference. If the coupon redemption is done by the user within the wait period, the user will move to the end block with blockId "15" using the nextBlockId reference. If the coupon redemption is not done by the user within the wait period, the user will move to the end block with blockId "13" using the remainderBlockId reference.
