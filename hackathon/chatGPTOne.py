@@ -159,8 +159,9 @@ async def send_prompt(request: PromptRequest):
                                           f"and different engagement block type (SMS, EMAIL etc) you need to refer STRICTLY to"
                                           f"the mentioned 'My journey meta template with welcome journey objective' "
                                           f"structures to answer. \n"
-                                          f"IMPORTANT: Next block id and remainder block id should be unique across "
-                                          f"journey meta template blocks i.e. two different blocks can not point to the same block."},
+                                          f"IMPORTANT: Two different journey template blocks can not have the same next block id or remainder block id. It should be unique across "
+                                          f"journey template blocks i.e. two different blocks can not point to the same block. \n"
+                                          f"IMPORTANT: There can be no orphan journey template block. Except entry block all the other journey template block should be referenced from another block. \n"},
 
             {"role": "system", "content": "Giving you the context below carefully read the whole the context and "
                                           "you every time you will answer you need to keep everything in mind from "
