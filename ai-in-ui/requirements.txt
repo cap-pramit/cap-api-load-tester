@@ -1,0 +1,5 @@
+openai==0.28
+fastapi
+uvicorn
+httpx
+contextvars

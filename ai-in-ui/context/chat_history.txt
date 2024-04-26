@@ -1,0 +1,265 @@
+Prompt:
+
+Create a react page component named CustomerFormPage that is a form based UI with the below mentioned sections to capture a customer’s details in customerInfo object and save that to the server, using the given UI specifications after that.
+
+1. Personal information section (3 rows with 2 columns each, last column will have 1 field)
+a. title (select, options - [mr, mrs])
+b. first name (input)
+c. last name (input)
+d. DOB (date)
+e. gender (radio button, options - [male, female, others], row layout)
+
+2. Contact information section (each field in its own row, so each column spans the entire row)
+a. country (select, options - [india, us, uk, others])
+b. address1 (input)
+c. address2 (input)
+d. city (input)
+e. pincode (input)
+
+3. Other information section (2 rows with 2 columns each)
+a. passport no (input)
+b. parent FFN (input)
+c. passport issual country (input)
+d. passport expiry (dob)
+
+4. Two action buttons in row layout (1 row with 2 columns, but each column has span = 5)
+a. Done (primary, onclick make prop function call for method saveDataForCustomer() with the data prepared)
+b. Cancel (secondary, onclick clear all state variables)
+
+
+Response:
+
+import React, { useState } from 'react';
+import moment from 'moment';
+import PageTemplate from '../../templates/PageTemplate';
+import {
+  CapRow,
+  CapColumn,
+  CapInput,
+  CapSelect,
+  CapDatePicker,
+  CapRadioGroup,
+  CapRadio,
+  CapButton
+} from '@capillarytech/cap-ui-library';
+
+const CustomerFormPage = ({ saveDataForCustomer }) => {
+  const [customerInfo, setCustomerInfo] = useState({
+    personalInfo: {
+      title: 'mr',
+      firstName: '',
+      lastName: '',
+      dob: moment(),
+      gender: 'male'
+    },
+    contactInfo: {
+      country: 'india',
+      address1: '',
+      address2: '',
+      city: '',
+      pincode: ''
+    },
+    otherInfo: {
+      passportNo: '',
+      parentFFN: '',
+      passportIssualCountry: '',
+      passportExpiry: moment()
+    }
+  });
+
+  const handleInputChange = (value, section, field) => {
+    setCustomerInfo(prevState => ({
+      ...prevState,
+      [section]: {
+        ...prevState[section],
+        [field]: value
+      }
+    }));
+  };
+
+  const clearForm = () => {
+    setCustomerInfo({
+      personalInfo: {
+        title: 'mr',
+        firstName: '',
+        lastName: '',
+        dob: moment(),
+        gender: 'male'
+      },
+      contactInfo: {
+        country: 'india',
+        address1: '',
+        address2: '',
+        city: '',
+        pincode: ''
+      },
+      otherInfo: {
+        passportNo: '',
+        parentFFN: '',
+        passportIssualCountry: '',
+        passportExpiry: moment()
+      }
+    });
+  };
+
+  const handleSaveData = () => {
+    saveDataForCustomer(customerInfo);
+  };
+
+  return (
+    <PageTemplate>
+      {/* Personal Information */}
+      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
+        <CapColumn span={12}>
+          <CapSelect
+            value={customerInfo.personalInfo.title}
+            label="Title"
+            options={[{ label: 'Mr', value: 'mr' }, { label: 'Mrs', value: 'mrs' }]}
+            onChange={(value) => handleInputChange(value, 'personalInfo', 'title')}
+            style={{ width: '250px' }}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapInput
+            value={customerInfo.personalInfo.firstName}
+            label="First Name"
+            onChange={(e) => handleInputChange(e.target.value, 'personalInfo', 'firstName')}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapInput
+            value={customerInfo.personalInfo.lastName}
+            label="Last Name"
+            onChange={(e) => handleInputChange(e.target.value, 'personalInfo', 'lastName')}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapDatePicker
+            defaultValue={customerInfo.personalInfo.dob}
+            label="DOB"
+            onChange={(value) => handleInputChange(value, 'personalInfo', 'dob')}
+          />
+        </CapColumn>
+        <CapColumn span={24}>
+          <CapRadioGroup
+            value={customerInfo.personalInfo.gender}
+            onChange={(event) => handleInputChange(event.target.value, 'personalInfo', 'gender')}
+          >
+            <CapRow>
+              <CapColumn span={6}>
+                <span style={{ textAlign: 'right' }}>Gender:</span>
+              </CapColumn>
+              <CapColumn span={6}>
+                <CapRadio value="male">Male</CapRadio>
+              </CapColumn>
+              <CapColumn span={6}>
+                <CapRadio value="female">Female</CapRadio>
+              </CapColumn>
+              <CapColumn span={6}>
+                <CapRadio value="others">Others</CapRadio>
+              </CapColumn>
+            </CapRow>
+          </CapRadioGroup>
+        </CapColumn>
+      </CapRow>
+
+      {/* Contact Information */}
+      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
+        <CapColumn span={24}>
+          <CapSelect
+            value={customerInfo.contactInfo.country}
+            label="Country"
+            options={[
+              { label: 'India', value: 'india' },
+              { label: 'US', value: 'us' },
+              { label: 'UK', value: 'uk' },
+              { label: 'Others', value: 'others' }
+            ]}
+            onChange={(value) => handleInputChange(value, 'contactInfo', 'country')}
+            style={{ width: '250px' }}
+          />
+        </CapColumn>
+      </CapRow>
+      <CapRow>
+        <CapColumn span={24}>
+          <CapInput
+            value={customerInfo.contactInfo.address1}
+            label="Address1"
+            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'address1')}
+          />
+        </CapColumn>
+      </CapRow>
+      <CapRow>
+        <CapColumn span={24}>
+          <CapInput
+            value={customerInfo.contactInfo.address2}
+            label="Address2"
+            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'address2')}
+          />
+        </CapColumn>
+      </CapRow>
+      <CapRow>
+        <CapColumn span={24}>
+          <CapInput
+            value={customerInfo.contactInfo.city}
+            label="City"
+            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'city')}
+          />
+        </CapColumn>
+      </CapRow>
+      <CapRow>
+        <CapColumn span={24}>
+          <CapInput
+            value={customerInfo.contactInfo.pincode}
+            label="Pincode"
+            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'pincode')}
+          />
+        </CapColumn>
+      </CapRow>
+
+      {/* Other Information */}
+      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
+        <CapColumn span={12}>
+          <CapInput
+            value={customerInfo.otherInfo.passportNo}
+            label="Passport No"
+            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'passportNo')}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapInput
+            value={customerInfo.otherInfo.parentFFN}
+            label="Parent FFN"
+            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'parentFFN')}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapInput
+            value={customerInfo.otherInfo.passportIssualCountry}
+            label="Passport Issual Country"
+            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'passportIssualCountry')}
+          />
+        </CapColumn>
+        <CapColumn span={12}>
+          <CapDatePicker
+            defaultValue={customerInfo.otherInfo.passportExpiry}
+            label="Passport Expiry"
+            onChange={(value) => handleInputChange(value, 'otherInfo', 'passportExpiry')}
+          />
+        </CapColumn>
+      </CapRow>
+
+      {/* Action Buttons */}
+      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
+        <CapColumn span={4}>
+          <CapButton type="primary" onClick={handleSaveData}>Done</CapButton>
+        </CapColumn>
+        <CapColumn span={4}>
+          <CapButton type="secondary" onClick={clearForm}>Cancel</CapButton>
+        </CapColumn>
+      </CapRow>
+    </PageTemplate>
+  );
+};
+
+export default CustomerFormPage;

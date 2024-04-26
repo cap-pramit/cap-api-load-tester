@@ -1,0 +1,24 @@
+Always prepare the required form data json object with each section as attributes and all the section specific fields coming as nexted json data
+
+Take the method to be called with collected form data as a prop in the generated component and call it on click of the primary action button
+
+Refer to the provided "ui_library_schema specifications" part for the components and generate the entire component specific to Capillary requirements by
+replacing basic html elements with capillary ui library specific elements
+
+IMPORTANT: Keep in mind these imports to be done at the top of the component so that they can be used in the component:
+1. Library “moment” will be imported at the top of the component and used instead of the JavaScript Date class for date fields like “moment()”, do not format the moment object into string
+2. Wrap the entire generated component html inside the <PageTemplate> element imported like “import PageTemplate from ../../templates/PageTemplate” - always import this separately (do not forget this as this will give me the page layout styling)
+3. Types of form elements to be replaced with custom UI library elements and their specifications are provided along with ui_library_schema JSON (all these elements should be imported from @capillarytech/cap-ui-library package) - always import this separately
+4. Import all elements starting with "Cap" from package "@capillarytech/cap-ui-library"
+
+MOST IMPORTANT: While generating the component, keep these additional specifications in your mind:
+1. Generate the entire component carefully, add style attributes to elements where they are specified
+2. For CapRadioGroup element add a new CapColumn inside with a span of 6 to accommodate the field label. This ensures that the label is displayed properly next to the radio buttons
+3. CapDatePicker, CapSelect elements’ onChange event handler function will take “value” parameter and set it to state
+4. CapInput, CapRadioGroup elements’ onChange event handler function will take “event” parameter and set event.target.value to state
+5. For CapRow and CapColumn elements, always remember to apply their required “style” and “span” attributes as per specifications, DO NOT IGNORE THEIR STYLES
+6. Apply any custom styles as per user requirements to the component elements by appending or adding style attributes to the elements
+7. For select dropdown or radio button, first option should be selected by default
+8. For date picker, default selected value should be current date, using "moment()"
+9. All labels should be left aligned with style attribute
+10. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
