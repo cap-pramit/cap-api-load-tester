@@ -1,265 +1,369 @@
 Prompt:
 
-Create a react page component named CustomerFormPage that is a form based UI with the below mentioned sections to capture a customer’s details in customerInfo object and save that to the server, using the given UI specifications after that.
+Please prepare a React component with me with the given specifications.
 
-1. Personal information section (3 rows with 2 columns each, last column will have 1 field)
-a. title (select, options - [mr, mrs])
-b. first name (input)
-c. last name (input)
-d. DOB (date)
-e. gender (radio button, options - [male, female, others], row layout)
+Component name: CustomerFormPage
+Form based UI with the below-mentioned sections to capture a customer’s details in customerInfo object and save that to the server.
+Please prepare all the form data in single level JSON object as it's needed for the API to be called.
+All fields in all the sections are mandatory to be filled up
 
-2. Contact information section (each field in its own row, so each column spans the entire row)
-a. country (select, options - [india, us, uk, others])
-b. address1 (input)
-c. address2 (input)
-d. city (input)
-e. pincode (input)
+Sections required in the UI
+1. Personal information -
 
-3. Other information section (2 rows with 2 columns each)
-a. passport no (input)
-b. parent FFN (input)
-c. passport issual country (input)
-d. passport expiry (dob)
+Specifications:
+a. Row layout with 2 columns in each row, 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
 
-4. Two action buttons in row layout (1 row with 2 columns, but each column has span = 5)
-a. Done (primary, onclick make prop function call for method saveDataForCustomer() with the data prepared)
-b. Cancel (secondary, onclick clear all state variables)
+Fields:
+a. title (select, options - [mr, mrs], 100% width)
+b. first name (input, 100% width)
+c. middle name (input, 100% width)
+d. last name (input, 100% width)
+e. DOB (date, 100% width)
+f. gender (radio button, options - [male, female, others], row layout with each option coming as a column inside along with the label)
+g. mobile (input, 100% width)
 
+2. Contact information -
+
+Specifications:
+a. Row layout with 1 column in each row, 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+
+Fields:
+a. house / flat no (input, 100% width)
+b. street (input, 100% width)
+c. landmark (input, 100% width)
+d. city (input, 100% width)
+e. district (input, 100% width)
+f. country (select, options - [india, us, uk, others], 100% width)
+g. pincode (input, 100% width)
+
+3. Other information -
+
+Specifications:
+a. Row layout with 2 columns in each row, 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+
+Fields:
+a. passport no (input, 100% width)
+b. occupation (select, options - [artist, banking, business, education, services, others], 100% width)
+c. parent FFN (input, 100% width)
+d. nationality (select, options - [indian, american, british, others], 100% width)
+e. passport issual country (input, 100% width)
+f. passport expiry (date, 100% width)
+
+4. Actions -
+
+Specifications:
+a. Row layout with 1 columns in each row, 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Each field will have 12px left and right margin
+
+Fields:
+a. Save (button, primary, onclick call props method saveDataForCustomer() with the customer info)
+b. Cancel (button, secondary, onclick clear all state data)
 
 Response:
 
 import React, { useState } from 'react';
 import moment from 'moment';
+// import Page template
 import PageTemplate from '../../templates/PageTemplate';
+// import all capillary UI elements
 import {
-  CapRow,
-  CapColumn,
-  CapInput,
-  CapSelect,
-  CapDatePicker,
-  CapRadioGroup,
-  CapRadio,
-  CapButton
+    CapRow,
+    CapColumn,
+    CapHeading,
+    CapInput,
+    CapSelect,
+    CapRadioGroup,
+    CapRadio,
+    CapDatePicker,
+    CapButton,
+    CapLabel,
 } from '@capillarytech/cap-ui-library';
 
 const CustomerFormPage = ({ saveDataForCustomer }) => {
-  const [customerInfo, setCustomerInfo] = useState({
-    personalInfo: {
+
+    // initialize form data
+    const [customerInfo, setCustomerInfo] = useState({
       title: 'mr',
       firstName: '',
+      middleName: '',
       lastName: '',
       dob: moment(),
-      gender: 'male'
-    },
-    contactInfo: {
-      country: 'india',
-      address1: '',
-      address2: '',
+      gender: 'male',
+      mobile: '',
+      houseFlatNo: '',
+      street: '',
+      landmark: '',
       city: '',
-      pincode: ''
-    },
-    otherInfo: {
+      district: '',
+      country: 'india',
+      pincode: '',
       passportNo: '',
+      occupation: 'artist',
       parentFFN: '',
+      nationality: 'indian',
       passportIssualCountry: '',
       passportExpiry: moment()
-    }
-  });
-
-  const handleInputChange = (value, section, field) => {
-    setCustomerInfo(prevState => ({
-      ...prevState,
-      [section]: {
-        ...prevState[section],
-        [field]: value
-      }
-    }));
-  };
-
-  const clearForm = () => {
-    setCustomerInfo({
-      personalInfo: {
-        title: 'mr',
-        firstName: '',
-        lastName: '',
-        dob: moment(),
-        gender: 'male'
-      },
-      contactInfo: {
-        country: 'india',
-        address1: '',
-        address2: '',
-        city: '',
-        pincode: ''
-      },
-      otherInfo: {
-        passportNo: '',
-        parentFFN: '',
-        passportIssualCountry: '',
-        passportExpiry: moment()
-      }
     });
-  };
 
-  const handleSaveData = () => {
-    saveDataForCustomer(customerInfo);
-  };
+    // call the prop method to save data
+    const saveData = () => {
+      // Call API to save customerInfo
+      console.log('Saving customer info:', customerInfo);
+      saveDataForCustomer(customerInfo);
+    };
 
-  return (
-    <PageTemplate>
-      {/* Personal Information */}
-      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
-        <CapColumn span={12}>
-          <CapSelect
-            value={customerInfo.personalInfo.title}
-            label="Title"
-            options={[{ label: 'Mr', value: 'mr' }, { label: 'Mrs', value: 'mrs' }]}
-            onChange={(value) => handleInputChange(value, 'personalInfo', 'title')}
-            style={{ width: '250px' }}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapInput
-            value={customerInfo.personalInfo.firstName}
-            label="First Name"
-            onChange={(e) => handleInputChange(e.target.value, 'personalInfo', 'firstName')}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapInput
-            value={customerInfo.personalInfo.lastName}
-            label="Last Name"
-            onChange={(e) => handleInputChange(e.target.value, 'personalInfo', 'lastName')}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapDatePicker
-            defaultValue={customerInfo.personalInfo.dob}
-            label="DOB"
-            onChange={(value) => handleInputChange(value, 'personalInfo', 'dob')}
-          />
-        </CapColumn>
-        <CapColumn span={24}>
-          <CapRadioGroup
-            value={customerInfo.personalInfo.gender}
-            onChange={(event) => handleInputChange(event.target.value, 'personalInfo', 'gender')}
-          >
-            <CapRow>
-              <CapColumn span={6}>
-                <span style={{ textAlign: 'right' }}>Gender:</span>
-              </CapColumn>
-              <CapColumn span={6}>
-                <CapRadio value="male">Male</CapRadio>
-              </CapColumn>
-              <CapColumn span={6}>
-                <CapRadio value="female">Female</CapRadio>
-              </CapColumn>
-              <CapColumn span={6}>
-                <CapRadio value="others">Others</CapRadio>
-              </CapColumn>
-            </CapRow>
-          </CapRadioGroup>
-        </CapColumn>
-      </CapRow>
+    // clear the form
+    const clearData = () => {
+        setCustomerInfo({
+            title: 'mr',
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            dob: moment(),
+            gender: 'male',
+            mobile: '',
+            houseFlatNo: '',
+            street: '',
+            landmark: '',
+            city: '',
+            district: '',
+            country: 'india',
+            pincode: '',
+            passportNo: '',
+            occupation: 'artist',
+            parentFFN: '',
+            nationality: 'indian',
+            passportIssualCountry: '',
+            passportExpiry: moment()
+        });
+    };
 
-      {/* Contact Information */}
-      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
-        <CapColumn span={24}>
-          <CapSelect
-            value={customerInfo.contactInfo.country}
-            label="Country"
-            options={[
-              { label: 'India', value: 'india' },
-              { label: 'US', value: 'us' },
-              { label: 'UK', value: 'uk' },
-              { label: 'Others', value: 'others' }
-            ]}
-            onChange={(value) => handleInputChange(value, 'contactInfo', 'country')}
-            style={{ width: '250px' }}
-          />
-        </CapColumn>
-      </CapRow>
-      <CapRow>
-        <CapColumn span={24}>
-          <CapInput
-            value={customerInfo.contactInfo.address1}
-            label="Address1"
-            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'address1')}
-          />
-        </CapColumn>
-      </CapRow>
-      <CapRow>
-        <CapColumn span={24}>
-          <CapInput
-            value={customerInfo.contactInfo.address2}
-            label="Address2"
-            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'address2')}
-          />
-        </CapColumn>
-      </CapRow>
-      <CapRow>
-        <CapColumn span={24}>
-          <CapInput
-            value={customerInfo.contactInfo.city}
-            label="City"
-            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'city')}
-          />
-        </CapColumn>
-      </CapRow>
-      <CapRow>
-        <CapColumn span={24}>
-          <CapInput
-            value={customerInfo.contactInfo.pincode}
-            label="Pincode"
-            onChange={(e) => handleInputChange(e.target.value, 'contactInfo', 'pincode')}
-          />
-        </CapColumn>
-      </CapRow>
+    return (
+      <PageTemplate>
+        <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
+          <CapColumn span={24}>
+            <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Personal Information</CapHeading>
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapSelect
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Title</CapLabel>}
+                options={[{ value: 'mr', label: 'Mr' }, { value: 'mrs', label: 'Mrs' }]}
+                value={customerInfo.title}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, title: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>First Name</CapLabel>}
+                value={customerInfo.firstName}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, firstName: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Middle Name</CapLabel>}
+                value={customerInfo.middleName}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, middleName: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Last Name</CapLabel>}
+                value={customerInfo.lastName}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, lastName: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapDatePicker
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>DOB</CapLabel>}
+                value={customerInfo.dob}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, dob: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapRadioGroup
+                value={customerInfo.gender}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, gender: e.target.value })}
+                style={{ width: '100%' }}
+            >
+              <CapRow>
+                <CapColumn span={6}>
+                    <CapLabel type="label2" style={{ textAlign: 'right' }}>Gender</CapLabel>
+                </CapColumn>
+                <CapColumn span={6}>
+                    <CapRadio value="male">Male</CapRadio>
+                </CapColumn>
+                <CapColumn span={6}>
+                    <CapRadio value="female">Female</CapRadio>
+                </CapColumn>
+                <CapColumn span={6}>
+                    <CapRadio value="others">Others</CapRadio>
+                </CapColumn>
+              </CapRow>
+            </CapRadioGroup>
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Mobile</CapLabel>}
+                value={customerInfo.mobile}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, mobile: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+        </CapRow>
 
-      {/* Other Information */}
-      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
-        <CapColumn span={12}>
-          <CapInput
-            value={customerInfo.otherInfo.passportNo}
-            label="Passport No"
-            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'passportNo')}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapInput
-            value={customerInfo.otherInfo.parentFFN}
-            label="Parent FFN"
-            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'parentFFN')}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapInput
-            value={customerInfo.otherInfo.passportIssualCountry}
-            label="Passport Issual Country"
-            onChange={(e) => handleInputChange(e.target.value, 'otherInfo', 'passportIssualCountry')}
-          />
-        </CapColumn>
-        <CapColumn span={12}>
-          <CapDatePicker
-            defaultValue={customerInfo.otherInfo.passportExpiry}
-            label="Passport Expiry"
-            onChange={(value) => handleInputChange(value, 'otherInfo', 'passportExpiry')}
-          />
-        </CapColumn>
-      </CapRow>
+        <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
+          <CapColumn span={24}>
+            <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Contact Information</CapHeading>
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>House / Flat No</CapLabel>}
+                value={customerInfo.houseFlatNo}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, houseFlatNo: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Street</CapLabel>}
+                value={customerInfo.street}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, street: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Landmark</CapLabel>}
+                value={customerInfo.landmark}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, landmark: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>City</CapLabel>}
+                value={customerInfo.city}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>District</CapLabel>}
+                value={customerInfo.district}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, district: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapSelect
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Country</CapLabel>}
+                options={[{ value: 'india', label: 'India' }, { value: 'us', label: 'US' }, { value: 'uk', label: 'UK' }, { value: 'others', label: 'Others' }]}
+                value={customerInfo.country}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, country: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Pincode</CapLabel>}
+                value={customerInfo.pincode}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, pincode: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+        </CapRow>
 
-      {/* Action Buttons */}
-      <CapRow style={{ marginTop: '8px', marginBottom: '8px' }}>
-        <CapColumn span={4}>
-          <CapButton type="primary" onClick={handleSaveData}>Done</CapButton>
-        </CapColumn>
-        <CapColumn span={4}>
-          <CapButton type="secondary" onClick={clearForm}>Cancel</CapButton>
-        </CapColumn>
-      </CapRow>
-    </PageTemplate>
-  );
+        <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
+          <CapColumn span={24}>
+            <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Other Information</CapHeading>
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport No</CapLabel>}
+                value={customerInfo.passportNo}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, passportNo: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapSelect
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Occupation</CapLabel>}
+                options={[{ value: 'artist', label: 'Artist' }, { value: 'banking', label: 'Banking' }, { value: 'business', label: 'Business' }, { value: 'education', label: 'Education' }, { value: 'services', label: 'Services' }, { value: 'others', label: 'Others' }]}
+                value={customerInfo.occupation}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, occupation: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Parent FFN</CapLabel>}
+                value={customerInfo.parentFFN}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, parentFFN: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapSelect
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Nationality</CapLabel>}
+                options={[{ value: 'indian', label: 'Indian' }, { value: 'american', label: 'American' }, { value: 'british', label: 'British' }, { value: 'others', label: 'Others' }]}
+                value={customerInfo.nationality}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, nationality: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapInput
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Issual Country</CapLabel>}
+                value={customerInfo.passportIssualCountry}
+                onChange={(e) => setCustomerInfo({ ...customerInfo, passportIssualCountry: e.target.value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+          <CapColumn span={12} style={{ padding: '8px 16px' }}>
+            <CapDatePicker
+                label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Expiry</CapLabel>}
+                value={customerInfo.passportExpiry}
+                onChange={(value) => setCustomerInfo({ ...customerInfo, passportExpiry: value })}
+                style={{ width: '100%' }}
+            />
+          </CapColumn>
+        </CapRow>
+
+        <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
+          <CapColumn span={24} style={{ padding: '8px 16px' }}>
+            <CapButton
+                type="primary"
+                onClick={saveData}
+                style={{ margin: '0 12px' }}
+            >
+                Save
+            </CapButton>
+            <CapButton
+                type="secondary"
+                onClick={clearData}
+                style={{ margin: '0 12px' }}
+            >
+                Cancel
+            </CapButton>
+          </CapColumn>
+        </CapRow>
+
+      </PageTemplate>
+    );
 };
 
 export default CustomerFormPage;

@@ -1,30 +1,65 @@
-Create a react page component named CustomerFormPage that is a form based UI with the below mentioned sections to capture a customer’s details in customerInfo object and save that to the server, using the given UI specifications after that.
+Please prepare a React component with me with the given specifications.
+
+Component name: CustomerFormPage
+Form based UI with the below-mentioned sections to capture a customer’s details in customerInfo object and save that to the server.
+Please prepare all the form data in single level JSON object as it's needed for the API to be called.
+All fields in all the sections are mandatory to be filled up
 
 Sections required in the UI
-1. Personal information (row layout with 3 columns in each row, padding 4px all around within each row, margin 8px on left and right of each column) - Add section heading at top before section fields, heading type h3
-a. title (select, options - [mr, mrs], width 150px)
-b. first name (input)
-c. middle name (input)
-d. last name (input)
-e. DOB (date, width 300px)
+1. Personal information -
+
+Specifications:
+a. Row layout with 2 columns in each row (2 x 3 grid layout), 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+
+Fields:
+a. title (select, options - [mr, mrs], 100% width)
+b. first name (input, 100% width)
+c. middle name (input, 100% width)
+d. last name (input, 100% width)
+e. DOB (date, 100% width)
 f. gender (radio button, options - [male, female, others], row layout with each option coming as a column inside along with the label)
-g. mobile (input)
+g. mobile (input, 100% width)
 
-2. Address information (row layout with 1 column in each row, padding 4px all around within each row, margin 8px on left and right of each column) - Add section heading at top before section fields, heading type h3
-a. house / flat no (input)
-b. street (input)
-c. landmark (input)
-d. city (input)
-e. district (input)
-f. country (select, options - [india, us, uk, others], width: 200px)
-g. pincode (input)
+2. Contact information -
 
-3. Passport information (row layout with 2 columns in each row, padding 4px all around within row, margin 8px on left and right of each column) - Add section heading at top before section fields, heading type h3
-a. passport no (input)
-b. parent FFN (input)
-c. passport issual country (input)
-d. passport expiry (dob)
+Specifications:
+a. Row layout with 1 column in each row (1 x 7 grid layout), 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
 
-4. Two action buttons in row layout (1 row with 2 columns, but each column has spans 4 grid units)
-a. Save (primary, onclick call props method saveDataForCustomer() with the customer info)
-b. Cancel (secondary, onclick clear all state data)
+Fields:
+a. house / flat no (input, 100% width)
+b. street (input, 100% width)
+c. landmark (input, 100% width)
+d. city (input, 100% width)
+e. district (input, 100% width)
+f. country (select, options - [india, us, uk, others], 100% width)
+g. pincode (input, 100% width)
+
+3. Other information -
+
+Specifications:
+a. Row layout with 2 columns in each row (2 x 3 grid layout), 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+
+Fields:
+a. passport no (input, 100% width)
+b. occupation (select, options - [artist, banking, business, education, services, others], 100% width)
+c. parent FFN (input, 100% width)
+d. nationality (select, options - [indian, american, british, others], 100% width)
+e. passport issual country (input, 100% width)
+f. passport expiry (date, 100% width)
+
+4. Actions -
+
+Specifications:
+a. Row layout with 2 columns in each row (1 x 2 grid layout), 4px padding on each row, 6px bottom margin
+b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
+c. Each field will have 12px left and right margin
+
+Fields:
+a. Save (button, primary, onclick call props method saveDataForCustomer() with the customer info)
+b. Cancel (button, secondary, onclick clear all state data)

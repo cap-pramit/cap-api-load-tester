@@ -46,7 +46,7 @@ Select / Dropdown -
     showSearch={showSearch boolean, search feature enable / disable}
     label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
     placeholder={placeholder}
-    options={options, array like [{value: "optionValue", label: "optionLabel"}]}
+    options={options, array like [{value: "optionValue", label: "optionLabel"}], prepare the data from options given in request}
     value={stateVariableValue}
     style={}
     onChange={onChange event handler function (value) => {set value to stateVariableValue}}
@@ -61,7 +61,7 @@ Multiselect / Tree selector -
     searchPlaceholder={searchPlaceholderText}
     closeText={closeText}
     selectText={selectText}
-    treeData={options array of elements with id, value, title, key fields for tree data}
+    treeData={options array of elements with id, value, title, key fields for tree data, prepare the data from options given in request}
     onSelect={onSelect item event handler function (value) => {set value to stateVariableValue of appliedKeys}}
     appliedKeys={stateVariableValue, list of selected keys from tree data options}
     searchKey={searchKeyText}

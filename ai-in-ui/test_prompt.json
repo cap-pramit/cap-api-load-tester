@@ -1,0 +1,64 @@
+{
+  "name": "CustomerFormPage",
+  "type": "Form",
+  "stateVariable": {
+    "name": "customerInfo",
+    "sample": {
+      "gender": "male",
+      "firstname": "",
+      "lastname": "",
+      "dob": "current date",
+      "address": "",
+      "addressline": "",
+      "region": "",
+      "zipcode": "",
+      "passport_number": "",
+      "parent_ffn": "",
+      "passport_issual_coun": "",
+      "passport_expiry": "",
+      "identifierValue": "",
+      "external_id": "",
+      "title": "mr",
+      "country_of_residence": "india",
+      "nature_of_profession": "",
+      "nationality": ""
+    }
+  },
+  "sections": [{
+    "name": "Personal information",
+    "specifications": [
+      "Row layout with 2 columns in each row, padding 4px within each row, margin 8px on left and right of each column",
+      "Add section heading at top, heading type h3, color #5E6C84, 20px top margin, 16px left margin, text should be left aligned",
+      "Each column will have 16px left & right padding"
+    ],
+    "fieldLayout": "column",
+    "fields": [{
+      "label": "Title",
+      "stateVariableField": "title",
+      "type": "select",
+      "options": ["mr", "mrs"],
+      "style": "width 100%"
+    }, {
+      "label": "First Name",
+      "stateVariableField": "firstname",
+      "type": "input",
+      "placeholder": "Enter first name",
+      "style": "width 100%"
+    }]
+  }, {
+    "specifications": [
+      "Row layout with 1 column containing all fields in it, spanning only 1/3rd of the row",
+      "Margin 6px between each fields within"
+    ],
+    "fieldLayout": "column",
+    "fields": [{
+      "label": "Save",
+      "type": "button primary",
+      "handlerDetails": "call prop method saveDataForCustomer with state variable details"
+    }, {
+      "label": "Cancel",
+      "type": "button secondary",
+      "handlerDetails": "clear form data"
+    }]
+  }]
+}
