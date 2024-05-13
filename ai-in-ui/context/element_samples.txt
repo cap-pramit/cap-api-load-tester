@@ -3,7 +3,7 @@ Row / Horizontal layout -
 
 Column / Vertical layout -
 <CapColumn className="columnClassName" style={{}} span={spanValue}>{...children}</CapColumn>
-spanValue can range between 1-24 distributed equally depending on number of columns required in the row
+spanValue is an integer that can range between 1-24 distributed equally depending on number of columns required in the row, formula = Math.floor(24/num_of_columns)
 
 Input box / Text box -
 <CapInput

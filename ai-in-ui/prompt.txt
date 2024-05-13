@@ -1,65 +1,81 @@
-Please prepare a React component with me with the given specifications.
-
-Component name: CustomerFormPage
-Form based UI with the below-mentioned sections to capture a customer’s details in customerInfo object and save that to the server.
-Please prepare all the form data in single level JSON object as it's needed for the API to be called.
-All fields in all the sections are mandatory to be filled up
-
-Sections required in the UI
-1. Personal information -
-
-Specifications:
-a. Row layout with 2 columns in each row (2 x 3 grid layout), 4px padding on each row, 6px bottom margin
-b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
-
-Fields:
-a. title (select, options - [mr, mrs], 100% width)
-b. first name (input, 100% width)
-c. middle name (input, 100% width)
-d. last name (input, 100% width)
-e. DOB (date, 100% width)
-f. gender (radio button, options - [male, female, others], row layout with each option coming as a column inside along with the label)
-g. mobile (input, 100% width)
-
-2. Contact information -
-
-Specifications:
-a. Row layout with 1 column in each row (1 x 7 grid layout), 4px padding on each row, 6px bottom margin
-b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
-
-Fields:
-a. house / flat no (input, 100% width)
-b. street (input, 100% width)
-c. landmark (input, 100% width)
-d. city (input, 100% width)
-e. district (input, 100% width)
-f. country (select, options - [india, us, uk, others], 100% width)
-g. pincode (input, 100% width)
-
-3. Other information -
-
-Specifications:
-a. Row layout with 2 columns in each row (2 x 3 grid layout), 4px padding on each row, 6px bottom margin
-b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-c. Add section heading at top before section fields, heading type h3, text-align left, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
-
-Fields:
-a. passport no (input, 100% width)
-b. occupation (select, options - [artist, banking, business, education, services, others], 100% width)
-c. parent FFN (input, 100% width)
-d. nationality (select, options - [indian, american, british, others], 100% width)
-e. passport issual country (input, 100% width)
-f. passport expiry (date, 100% width)
-
-4. Actions -
-
-Specifications:
-a. Row layout with 2 columns in each row (1 x 2 grid layout), 4px padding on each row, 6px bottom margin
-b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-c. Each field will have 12px left and right margin
-
-Fields:
-a. Save (button, primary, onclick call props method saveDataForCustomer() with the customer info)
-b. Cancel (button, secondary, onclick clear all state data)
+Create a react component to capture extended fields data and save it through given API call. Refer to the below extended field entity schema:
+{
+  "entity": {
+    "name": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "entityType": {
+      "type": "enum",
+      "defaultValue": "",
+      "uiType": "dropdown",
+      "possibleValues": [
+        "customer",
+        "transaction",
+        "lineitem",
+        "card"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "dataType": {
+      "type": "enum",
+      "defaultValue": "",
+      "uiType": "dropdown",
+      "possibleValues": [
+        "DOUBLE",
+        "STRING",
+        "INTEGER",
+        "CUSTOM_ENUM"
+      ]
+    },
+    "enumValues": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "isMandatory": {
+      "type": "boolean",
+      "defaultValue": false,
+      "uiType": "checkbox"
+    },
+    "isUpdateable": {
+      "type": "boolean",
+      "defaultValue": true,
+      "uiType": "checkbox"
+    },
+    "hideDisplay": {
+      "type": "boolean",
+      "defaultValue": true,
+      "uiType": "checkbox"
+    },
+    "position": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "defaultValue": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "isAuditTrailEnabled": {
+      "type": "boolean",
+      "defaultValue": false,
+      "uiType": "checkbox"
+    },
+    "isPiiData": {
+      "type": "boolean",
+      "defaultValue": false,
+      "uiType": "checkbox"
+    },
+    "rejectTxnOnInvalidValue": {
+      "type": "boolean",
+      "defaultValue": false,
+      "uiType": "checkbox"
+    }
+  },
+  "action": {
+    "api": "/intouch/v1.1/extended-fields",
+    "method": "GET"
+  }
+}

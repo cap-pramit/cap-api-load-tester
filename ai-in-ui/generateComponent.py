@@ -7,6 +7,8 @@ import asyncio
 import contextvars
 import functools
 
+from context.ui_context import chat_history, base_instructions, element_samples
+
 gpt_options = {
     "35turbo125": {
         "model": "gpt-3.5-turbo-0125",
@@ -103,7 +105,7 @@ async def instructions_training(file_path):
         print('fetching base instructions')
         initial_context = read_context_from_file(file_path, False)
         chat_history = [
-            {"role": "system", "content": "Carefully read the context and instructions provided and understand the requirements for these types of UI components. "
+            {"role": "user", "content": "Carefully read the context and instructions provided and understand the requirements for these types of UI components. "
                                           "You are required to write a react component for the same following the given context and UI elements schema information.\n"
                                           f"Base instructions: \n{initial_context}"
             }
@@ -119,7 +121,7 @@ async def sample_elements_training(file_path):
         print('fetching sample elements structure')
         elements_data = read_context_from_file(file_path, False)
         chat_history = [
-            {"role": "system",
+            {"role": "user",
              "content": "\n\nUse the following cap-ui-library elements specifications to replace basic HTML elements from your component code "
                         "with capillary UI library (@capillarytech/cap-ui-library that you have imported at the top of file) elements "
                         "as per requirement to make sure your component adheres to required capillary UX design\n"
@@ -142,14 +144,33 @@ async def sample_data_training(file_path):
                         "job is to write React functional components which STRICTLY ADHERE to given context, elements specifications and instructions. "
                         "Always carefully read the context and instructions provided and understand the requirements for these types of UI components. "
             },
-            {"role": "system", "content": "\n\nProvided are some sample requests and the components generated as result below to help you understand how to generate "
-                                          "the component accurately. This is just to set context and teach you "
-                                          "about the type of UI development that is needed to be done for reference, no response needed here. \n"
-                                          f"{sample_data}"
-            }
+            # {"role": "user", "content": "\n\nProvided are some sample requests and the components generated as result below to help you understand how to generate "
+            #                               "the component accurately. This is just to set context and teach you "
+            #                               "about the type of UI development that is needed to be done for reference, no response needed here. \n"
+            #                               f"{sample_data}"
+            # }
         ]
         await generate_model_response(chat_history)
         print("Sample data training completed.")
+    except Exception as e:
+        print(f"Error during sample data training: {e}")
+
+async def fetch_initial_chat_history(file_path):
+    try:
+        print('Fetching sample prompt/response examples')
+        sample_data = read_context_from_file(file_path, False)
+        chat_history = [
+            # {"role": "system",
+            #  "content": "You are a an accomplished senior react UI web application developer, who works for Capillary Technologies. Your "
+            #             "job is to write React functional components which STRICTLY ADHERE to given context, elements specifications and instructions. "
+            #             "Always carefully read the context and instructions provided and understand the requirements for these types of UI components. "
+            # },
+            {"role": "user", "content": "\n\nProvided are some sample requests and the components generated as result below to help you understand how to generate "
+                                          "the component accurately. No response needed here. \n"
+                                          f"{sample_data}"
+            }
+        ]
+        return chat_history
     except Exception as e:
         print(f"Error during sample data training: {e}")
 
@@ -158,7 +179,7 @@ async def json_schema_training(file_path):
         print('fetching json schema for UI elements')
         schema = read_context_from_file(file_path, False)
         chat_history = [
-            {"role": "system", "content": "\nUse this json schema to replace basic HTML elements from your component code "
+            {"role": "user", "content": "\nUse this json schema to replace basic HTML elements from your component code "
                                           "with capillary UI library (@capillarytech/cap-ui-library that you have imported at the top of file) specific elements "
                                           "as per requirement to make sure your component adheres to required capillary UX design\n"
                                           f"ui_library_schema_specifications: \n{schema}"
@@ -175,7 +196,7 @@ async def prompt_schema_training(file_path):
         print('fetching prompt schema for request')
         schema = read_context_from_file(file_path, False)
         chat_history = [
-            {"role": "system", "content": "\n\nUse this json schema to understand my request and its different fields, to generate the component\n"
+            {"role": "user", "content": "\n\nUse this json schema to understand my request and its different fields, to generate the component\n"
                                           f"request_specifications: \n{schema}"
             }
         ]
@@ -186,14 +207,19 @@ async def prompt_schema_training(file_path):
         print(f"Error during prompt schema training: {e}")
 
 async def generate_context(directory_path):
-    tasks = [
+    context_tasks = [
         asyncio.create_task(instructions_training(f"{directory_path}/instructions.txt")),
         # asyncio.create_task(json_schema_training(f"{directory_path}/ui_library_schema.json")),
         asyncio.create_task(sample_elements_training(f"{directory_path}/element_samples.txt")),
         # asyncio.create_task(sample_data_training(f"{directory_path}/chat_history.txt")),
         # asyncio.create_task(prompt_schema_training(f"{directory_path}/prompt_schema.json")),
     ]
-    return await asyncio.gather(*tasks)
+    history_tasks = [
+        asyncio.create_task(fetch_initial_chat_history(f"{directory_path}/chat_history.txt")),
+    ]
+    initial_context = await asyncio.gather(*context_tasks)
+    history = await asyncio.gather(*history_tasks)
+    return initial_context + history[0]
 
 async def complete_initial_training(directory_path):
     tasks = [
@@ -206,10 +232,44 @@ async def generate_component(prompt_file, context):
     try:
         prompt = read_context_from_file(prompt_file, False)
         final_context = [c for c in context if (c is not None and type(c) == dict)]
-        user_prompt = {"role": "user", "content": "Please use the context and instructions provided to you along with the ui_library_schema_specifications "
-                                          "and write a Capillary specific react component as accurately as possible \n"
-                                          f"{prompt}"
+        user_prompt = {"role": "user", "content": "Please use the context and instructions provided to you "
+                                                  "and write a Capillary specific React component as accurately as possible \n"
+                                                  f"{prompt}"
                     }
+        print(f"Generating response from gpt...")
+        model_response = await generate_model_response(final_context, user_prompt)
+        print(f"Response received!")
+        if model_response is not None:
+            file_content = re.sub(r'```jsx\n', '', model_response)
+            file_content = re.sub(r'\n```', '', file_content)
+            match = re.search(r'export\sdefault\s([a-zA-Z]*)', file_content)
+            if match is not None:
+                file_name = match.group(1)
+                print(f"Component name: {file_name}")
+                file_path = f"./{file_name}.js"
+                write_file(file_path, file_content)
+                print(f"Component generated at {file_path}")
+    except Exception as e:
+        print(f"Error during generating component: {str(e)}")
+    finally:
+        return file_path
+
+async def generate_component_2(prompt_file):
+    file_path = None
+    try:
+        prompt = read_context_from_file(prompt_file, False)
+        final_context = base_instructions + element_samples
+        user_prompt = {
+            "role": "user",
+            "content": prompt,
+        }
+        follow_up_prompt = {
+            "role": "user",
+            "content": """
+                Write the entire component for me, and give me just the component so that I can use it in my react project directly, do not skip any of the
+                fields from the given entity schema. Remove unused methods from the component and keep only things that are required.
+            """,
+        }
         print(f"Generating response from gpt...")
         model_response = await generate_model_response(final_context, user_prompt)
         print(f"Response received!")
@@ -261,12 +321,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    initialize_openai('OPEN_API_KEY')
+    initialize_openai(os.getenv('OPEN_AI_API_KEY'))
 
-    asyncio.run(complete_initial_training(args.directory_path))
-    context = asyncio.run(generate_context(args.directory_path))
-    component_path = asyncio.run(generate_component(args.prompt_file, context))
+    # asyncio.run(complete_initial_training(args.directory_path))
+    # context = asyncio.run(generate_context(args.directory_path))
+    # component_path = asyncio.run(generate_component(args.prompt_file, context))
 
-    # import uvicorn
-    #
-    # uvicorn.run(app, host="0.0.0.0", port=8001)
+    component_path = asyncio.run(generate_component_2(args.prompt_file))
