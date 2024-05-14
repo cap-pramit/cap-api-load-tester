@@ -30,9 +30,9 @@ gpt_options = {
         "model": "ft:gpt-3.5-turbo-0125:capillarytech:cap-ai-ui:9OjB8Ic7",
         "tokens": 4096
     },
-    "codex": {
-        "model": "davinci-002",
-        "tokens": 16385
+    "basic4o": {
+        "model": "gpt-4o",
+        "tokens": 4096
     },
 }
 
@@ -89,7 +89,7 @@ async def generate_model_response(final_context, user_prompt = None):
     try:
         # gpt = gpt_options['35turbo125']
         # gpt = gpt_options['custom1']
-        gpt = gpt_options['codex']
+        gpt = gpt_options['basic4o']
         messages = final_context
         if user_prompt is not None:
             messages.append(user_prompt)

@@ -2301,9 +2301,14 @@ chat_history = [
 base_instructions = [
     {
         "role": "system",
-        "content": "You are a an accomplished senior react UI web application developer, who works for Capillary Technologies. Your "
-                    "job is to write React functional components which follow the capillary UX design for look and feel. "
-                    "Always carefully read the context and instructions provided to understand the requirements for these UI components. "
+        "content": """
+            You are a an accomplished senior react UI web application developer, who works for Capillary Technologies. 
+            Your job is to write React components which follow the capillary UX design for look and feel. 
+            There can be 2 types of components:
+                1. Redux state-managed React component (Full redux connected component with state management using actions, selectors, reducer, saga and API call, apart from the main component file, style, Loadable and index files)
+                2. Simple React component (Just the component file along with its style, Loadable and index files)
+            Always carefully read the context and instructions provided to understand the requirements for these UI components.
+        """
     },
     {
         "role": "system",
@@ -2374,6 +2379,18 @@ base_instructions = [
             48. Default pagination should always be added to the component whenever tables are used. Default limit will be 10 and 1st page selected, pattern of implementation will be same as given in examples
             49. Pagination state variable and its management should be done using useState() from react, so import useState at the beginning of the component
             50. For redux state managed components, `className` will always be a prop in the component and <div className={className}> will wrap around the entire content
+            51. Complete the implementation by creating all required files in following order:
+                a. api.js entry (just the API caller method needed, not full implementation) [Not needed for simple components, needed for redux state-managed components only]
+                b. constants.js [Not needed for simple components, needed for redux state-managed components only]
+                c. actions.js [Not needed for simple components, needed for redux state-managed components only]
+                d. reducer.js [Not needed for simple components, needed for redux state-managed components only]
+                e. selectors.js [Not needed for simple components, needed for redux state-managed components only]
+                f. saga.js [Not needed for simple components, needed for redux state-managed components only]
+                g. style.js [Not needed for simple components, needed for redux state-managed components only]
+                h. Component JS file [Needed for both types of components generated]
+                i. Loadable.js [Needed for both types of components generated]
+                j. index.js [Needed for both types of components generated]
+                k. routes.js entry [Not needed for simple components, needed for redux state-managed components only]
             ## END instructions for generating component code ##
         """
     }
@@ -2391,6 +2408,35 @@ component_constructs = [
               return httpRequest(url, getVulcanAPICallObject('GET', data));
             };
             ## End entry in app/services/api.js ##
+            
+            ## BEGIN api.js example - FULL FILE if required ##
+            import { apiCaller } from '@capillarytech/vulcan-react-sdk/utils';
+            import endpoints from '../config/endpoints';
+            import * as requestConstructor from './requestConstructor';
+            
+            const { getVulcanAPICallObject, getAryaAPICallObject } = requestConstructor;
+            
+            function redirectIfUnauthenticated(response) {
+              const { removeAuthenticationDetais } = require('../utils/authWrapper');
+              const isUnauthorized = response.status === 401;
+              const isLoginPage = window.location.pathname.indexOf('/login') !== -1;
+              const isAuthUserCall =
+                response.url.split('auth')[1] &&
+                response.url.split('auth')[1].split('?')[0] === '/user';
+              if (isUnauthorized) {
+                if (isLoginPage && isAuthUserCall) return;
+                removeAuthenticationDetais();
+              }
+            }
+            
+            const httpRequest = apiCaller.initializeApiCaller({redirectIfUnauthenticated});
+            
+            export const fetchCustomFields = async (data) => {
+              // pattern - `${endpoints.vulcan_endpoint}/intouch/${schema.action.api}` mandatory to attach endpoints.vulcan_endpoint to the API endpoint given for a valid call from UI
+              const url = `${endpoints.vulcan_endpoint}/intouch/v2/customFields`;
+              return httpRequest(url, getVulcanAPICallObject('GET', data));
+            };
+            ## END api.js example - FULL FILE if required ##
         """
     },
     {
