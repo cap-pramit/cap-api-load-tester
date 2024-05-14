@@ -1,4 +1,4 @@
-chat_history = [
+training_data = [
     {
         "role": "user",
         "content": """
@@ -155,6 +155,7 @@ chat_history = [
             import { CapRow, CapColumn, CapInput, CapSelect, CapRadioGroup, CapDatePicker, CapButton, CapHeading, CapLabel } from '@capillarytech/cap-ui-library';
             
             export const CustomerInformationForm = ({
+              className,
               customerInformation,
               actions,
               intl,
@@ -188,6 +189,7 @@ chat_history = [
               };
             
               return (
+                <div className={className}>
                   <PageTemplate>
                       <CapRow>
                           <CapColumn span={24}>
@@ -232,6 +234,7 @@ chat_history = [
                           Save Customer
                       </CapButton>
                   </PageTemplate>
+                </div>
               );
             };
             
@@ -275,7 +278,8 @@ chat_history = [
     {
         "role": "user",
         "content": """
-            Create a simple react component to capture customer information and make an API call to save the customer details to server from the below specs:
+            Create a simple react component to capture customer information and make a props call to save the customer details. Use your own layout and styling.
+            Refer to the below schema for cutsomer entity:
             {
               "entity": {
                 "title": {
@@ -323,12 +327,6 @@ chat_history = [
                   "type": "string",
                   "defaultValue": ""
                 }
-              },
-              "action": {
-                  "save": {
-                    "api": "/saveCustomer",
-                    "method": "POST"
-                  }
               }
             }
         """
@@ -514,7 +512,7 @@ chat_history = [
     {
         "role": "assistant",
         "content": """
-            import React, { useEffect } from 'react';
+            import React, { useEffect, useState } from 'react';
             import { compose, bindActionCreators } from 'redux';
             import { connect } from 'react-redux';
             import { createStructuredSelector } from 'reselect';
@@ -530,10 +528,16 @@ chat_history = [
             import PageTemplate from '../../templates/PageTemplate';
             import style from './style';
             
-            const ExtendedFieldsTable = ({ extendedFieldsData, actions }) => {
+            const ExtendedFieldsTable = ({ className, extendedFieldsData, actions }) => {
             
               // extract data and fetching status from the props data, taken from redux state via selectors
               const { data, fetching } = extendedFieldsData;
+              
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
               
               useEffect(() => {
                 // always make API call to fetch data in case of redux state managed components by using actions call instead of direct method import / call
@@ -541,10 +545,10 @@ chat_history = [
               }, []);
             
               ## add this section if actions column is required by user ##
-              const handleRowClick = e => {
+              const handleMenuClick = e => {
                 e.domEvent.stopPropagation();
               };
-              const handleDropdownClick = e => {
+              const handleMenuDropdownClick = e => {
                 e.stopPropagation();
               };
               ## end of if actions column is required by user ##
@@ -557,6 +561,34 @@ chat_history = [
                   { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
                   { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
                   { dataIndex: 'enumValues', key: 'enumValues', title: <CapHeading type="h5">Enum Values</CapHeading> },
+                  // add actions only when required
+                  { 
+                      dataIndex: '', 
+                      key: 'actions', 
+                      title: '', 
+                      align: 'center', 
+                      width: '8%',
+                      render: (text, record) => (
+                        <CapRow>
+                          <CapDropdown onClick={handleMenuDropdownClick} overlay={(
+                            <CapMenu onClick={handleMenuClick}>
+                              <CapMenu.Item
+                                onClick={() => { /* handle this menu click action item on particular row */ }}
+                              >
+                                Action_1
+                              </CapMenu.Item>
+                              <CapMenu.Item
+                                onClick={() => { /* handle this menu click action item on particular row */ }}
+                              >
+                                Action_2
+                              </CapMenu.Item>
+                            </CapMenu>
+                          )}>
+                            <CapIcon type="more" aria-label="Action menu icon" />
+                          </CapDropdown>
+                        </CapRow>
+                      )
+                    }
                 ];
                 // calculate required column width based on whether actions column is required
                 const columnWidth = `${Math.floor(<if actions column is there then 92 else 100>  / columns.length)}%`;
@@ -565,41 +597,11 @@ chat_history = [
                   ...col,
                   width: columnWidth,
                 }));
-                ## add this section if actions column is required by user ##
-                ## import CapDropdown and CapMenu ##
-                ## render all action items required in CapMenu.Item ##
-                finalColumns.push({ 
-                  dataIndex: '', 
-                  key: 'actions', 
-                  title: '', 
-                  align: 'center', 
-                  width: '8%',
-                  render: (text, record) => (
-                    <CapRow>
-                      <CapDropdown onClick={handleDropdownClick} overlay={(
-                        <CapMenu onClick={handleRowClick}>
-                          <CapMenu.Item
-                            onClick={() => { /* handle this menu click action item on particular row */ }}
-                          >
-                            Action_1
-                          </CapMenu.Item>
-                          <CapMenu.Item
-                            onClick={() => { /* handle this menu click action item on particular row */ }}
-                          >
-                            Action_2
-                          </CapMenu.Item>
-                        </CapMenu>
-                      )}>
-                        <CapIcon type="more" aria-label="Action menu icon" />
-                      </CapDropdown>
-                    </CapRow>
-                  )
-                });
-                ## end of if actions column is required by user ##
                 return finalColumns;
               };
                 
               return (
+              <div className={className}>
                 <PageTemplate>
                   <CapRow>
                     <CapColumn span={24}>
@@ -614,11 +616,7 @@ chat_history = [
                           rowKey="id" // Assuming 'id' is the unique key for each extended field
                           rowSelection={null}
                           identifier="extendedFieldsTable"
-                          offset_limit={{
-                              limit: 10, // based on user input
-                              pageNumber: 0,
-                              order: "DESC"
-                          }}
+                          pagination={pagination}
                           scroll={{ y: 500 }}
                           infinteScroll={false}
                           showLoader={false}
@@ -636,6 +634,7 @@ chat_history = [
                     </CapColumn>
                   </CapRow>
                 </PageTemplate>
+              </div>
               );
             };
             
@@ -666,104 +665,1344 @@ chat_history = [
                 withConnect,
             )(injectIntl(withStyles(clearDataOnUnmount(ExtendedFieldsTable, "clearData"), style)));
         """
-    }
-]
-
-chat_history_2 = [
+    },
     {
         "role": "user",
         "content": """
-            Please use the context and instructions provided to you and write a Capillary specific React component as accurately as possible
-            Component name: CustomerFormPage
-            Form based UI with the below-mentioned sections to capture a customer’s details in customerInfo object and save that to the server.
-            Please prepare all the form data in single level JSON object as it's needed for the API to be called.
-            All fields in all the sections are mandatory to be filled up
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. Also, add edit and delete actions for the rows of the table with dummy functions to be implemented. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"enableAuditTrail\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPiiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPsiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { connect } from 'react-redux';
+            import { createStructuredSelector } from 'reselect';
+            import { injectIntl, intlShape } from 'react-intl';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
+            import PageTemplate from '../../templates/PageTemplate';
+            import style from './style';
             
-            Sections required in the UI
-            1. Personal information -
+            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
             
-            Specifications:
-            a. Row layout with 2 columns in each row, 4px padding on each row, 6px bottom margin
-            b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-            c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+              const { data, fetching } = customFieldsData;
+              
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
             
-            Fields:
-            a. title (select, options - [mr, mrs], 100% width)
-            b. first name (input, 100% width)
-            c. middle name (input, 100% width)
-            d. last name (input, 100% width)
-            e. DOB (date, 100% width)
-            f. gender (radio button, options - [male, female, others], row layout with each option coming as a column inside along with the label)
-            g. mobile (input, 100% width)
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
             
-            2. Contact information -
+              const handleActionsMenuClick = e => {
+                e.domEvent.stopPropagation();
+              };
             
-            Specifications:
-            a. Row layout with 1 column in each row, 4px padding on each row, 6px bottom margin
-            b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-            c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+              const handleActionsMenuDropdownClick = e => {
+                e.stopPropagation();
+              };
             
-            Fields:
-            a. house / flat no (input, 100% width)
-            b. street (input, 100% width)
-            c. landmark (input, 100% width)
-            d. city (input, 100% width)
-            e. district (input, 100% width)
-            f. country (select, options - [india, us, uk, others], 100% width)
-            g. pincode (input, 100% width)
+              const handleEdit = record => {
+                console.log('Edit record:', record);
+              };
             
-            3. Other information -
+              const handleDelete = record => {
+                console.log('Delete record:', record);
+              };
             
-            Specifications:
-            a. Row layout with 2 columns in each row, 4px padding on each row, 6px bottom margin
-            b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-            c. Add section heading at top before section fields, heading type h3, color #5E6C84, 20px top margin, 16px left margin, 10px bottom margin, text should be left aligned
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  { dataIndex: 'enableAuditTrail', key: 'enableAuditTrail', title: <CapHeading type="h5">Audit Trail</CapHeading> },
+                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                  // add only when actions columns is needed
+                  {
+                      dataIndex: '',
+                      key: 'actions',
+                      title: '',
+                      align: 'center',
+                      render: (text, record) => (
+                        <CapRow>
+                          <CapDropdown onClick={handleActionsMenuDropdownClick} overlay={(
+                            <CapMenu onClick={handleActionsMenuClick}>
+                              <CapMenu.Item onClick={() => handleEdit(record)}>Edit</CapMenu.Item>
+                              <CapMenu.Item onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                            </CapMenu>
+                          )}>
+                            <CapIcon type="more" aria-label="Action menu icon" />
+                          </CapDropdown>
+                        </CapRow>
+                      )
+                    }
+                ];
             
-            Fields:
-            a. passport no (input, 100% width)
-            b. occupation (select, options - [artist, banking, business, education, services, others], 100% width)
-            c. parent FFN (input, 100% width)
-            d. nationality (select, options - [indian, american, british, others], 100% width)
-            e. passport issual country (input, 100% width)
-            f. passport expiry (date, 100% width)
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
             
-            4. Actions -
+                const finalColumns = columns.map(col => ({
+                  ...col,
+                  width: columnWidth,
+                }));
+                return finalColumns;
+              };
             
-            Specifications:
-            a. Row layout with 1 columns in each row, 4px padding on each row, 6px bottom margin
-            b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-            c. Each field will have 12px left and right margin
+              return (
+              <div className={className}>
+                <PageTemplate>
+                  <CapRow>
+                    <CapColumn span={24}>
+                      <CapHeading type="h2">Custom Fields</CapHeading>
+                    </CapColumn>
+                    <CapColumn span={24}>
+                      <CapSpin spinning={fetching}>
+                        <CapTable
+                          className="custom-fields-table"
+                          columns={getCustomFieldsTableColumns()}
+                          dataSource={data}
+                          rowKey="id"
+                          rowSelection={null}
+                          identifier="customFieldsTable"
+                          pagination={pagination}
+                          scroll={{ y: 500 }}
+                          infinteScroll={false}
+                          showLoader={false}
+                          rowClassName="custom-fields-row"
+                          onRow={record => {
+                            return {
+                              onClick: event => {
+                                /* handle row click */
+                              },
+                            };
+                          }}
+                        />
+                      </CapSpin>
+                    </CapColumn>
+                  </CapRow>
+                </PageTemplate>
+              </div>
+              );
+            };
             
-            Fields:
-            a. Save (button, primary, onclick call props method saveDataForCustomer() with the customer info)
-            b. Cancel (button, secondary, onclick clear all state data)
+            CustomFieldsTable.propTypes = {
+              customFieldsData: PropTypes.array.isRequired,
+              actions: PropTypes.object,
+              intl: intlShape.isRequired,
+            };
+            
+            const mapStateToProps = createStructuredSelector({
+              customFieldsData: makeSelectCustomFields(),
+            });
+            
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+            
+            const withConnect = connect(mapStateToProps, mapDispatchToProps);
+            
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+            
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style)));
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a simple react component to list all the organization's extended fields in a tabular format. Do not add actions on the rows. 
+            Consider that the extended fields data is coming to the component as a prop with data(list) and loading (boolean) attributes.
+            Keep 15 rows per page and select 3rd page by default. 
+            Refer to the below extended field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"enableAuditTrail\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPiiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPsiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}}}
         """
     },
     {
         "role": "assistant",
         "content": """
             import React, { useState } from 'react';
-            import moment from 'moment';
-            // import Page template
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            
+            const ExtendedFieldsTable = ({ data, loading }) => {
+                const [pagination, setPagination] = useState({ 
+                  pageSize: 15, // based on user input, limit of records per page
+                  current: 3, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+                });
+              
+                const getExtendedFieldsTableColumns = () => {
+                    return [
+                        { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                        { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                        { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                        { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                        { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                        { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                        { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                        { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                        { dataIndex: 'enableAuditTrail', key: 'enableAuditTrail', title: <CapHeading type="h5">Audit Trail</CapHeading> },
+                        { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                        { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                    ];
+                };
+            
+                return (
+                    <CapRow>
+                        <CapColumn span={24}>
+                            <CapHeading type="h2">Organization's Extended Fields</CapHeading>
+                        </CapColumn>
+                        <CapColumn span={24}>
+                            <CapSpin spinning={loading}>
+                                <CapTable
+                                    className="extended-fields-table"
+                                    columns={getExtendedFieldsTableColumns()}
+                                    dataSource={data}
+                                    rowKey="id" // Assuming 'id' is the unique key for each extended field
+                                    rowSelection={null}
+                                    identifier="extendedFieldsTable"
+                                    pagination={pagination}
+                                    scroll={{ y: 500 }}
+                                    infinteScroll={false}
+                                    showLoader={false}
+                                    rowClassName="row-class-name"
+                                />
+                            </CapSpin>
+                        </CapColumn>
+                    </CapRow>
+                );
+            };
+            
+            ExtendedFieldsTable.propTypes = {
+                data: PropTypes.array.isRequired,
+                loading: PropTypes.bool.isRequired,
+            };
+            
+            export default ExtendedFieldsTable;
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
+            Create a custom row class in style.js along with it to make sure table cells text overflow is handled with ellipsis.
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"enableAuditTrail\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPiiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPsiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            ```javascript
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { connect } from 'react-redux';
+            import { createStructuredSelector } from 'reselect';
+            import { injectIntl, intlShape } from 'react-intl';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
             import PageTemplate from '../../templates/PageTemplate';
-            // import all capillary UI elements
-            import {
-                CapRow,
-                CapColumn,
-                CapHeading,
-                CapInput,
-                CapSelect,
-                CapRadioGroup,
-                CapRadio,
-                CapDatePicker,
-                CapButton,
-                CapLabel,
-            } from '@capillarytech/cap-ui-library';
+            import style from './style';
             
-            const CustomerFormPage = ({ saveDataForCustomer }) => {
+            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
             
-                // initialize form data
-                const [customerInfo, setCustomerInfo] = useState({
+              const { data, fetching } = customFieldsData;
+              
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
+            
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
+            
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  { dataIndex: 'enableAuditTrail', key: 'enableAuditTrail', title: <CapHeading type="h5">Audit Trail</CapHeading> },
+                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                ];
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
+                const finalColumns = columns.map(col => ({
+                  ...col,
+                  width: columnWidth,
+                }));
+                return finalColumns;
+              };
+            
+              return (
+              <div className={className}>
+                <PageTemplate>
+                  <CapRow>
+                    <CapColumn span={24}>
+                      <CapHeading type="h2">Custom Fields</CapHeading>
+                    </CapColumn>
+                    <CapColumn span={24}>
+                      <CapSpin spinning={fetching}>
+                        <CapTable
+                          className="custom-fields-table"
+                          columns={getCustomFieldsTableColumns()}
+                          dataSource={data}
+                          rowKey="id"
+                          rowSelection={null}
+                          identifier="customFieldsTable"
+                          pagination={pagination}
+                          scroll={{ y: 500 }}
+                          infinteScroll={false}
+                          showLoader={false}
+                          rowClassName="custom-fields-row" // Added custom class name here
+                          onRow={record => {
+                            return {
+                              onClick: event => {
+                                /* handle row click */
+                              },
+                            };
+                          }}
+                        />
+                      </CapSpin>
+                    </CapColumn>
+                  </CapRow>
+                </PageTemplate>
+              </div>
+              );
+            };
+            
+            CustomFieldsTable.propTypes = {
+              customFieldsData: PropTypes.array.isRequired,
+              actions: PropTypes.object,
+              intl: intlShape.isRequired,
+            };
+            
+            const mapStateToProps = createStructuredSelector({
+              customFieldsData: makeSelectCustomFields(),
+            });
+            
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+            
+            const withConnect = connect(mapStateToProps, mapDispatchToProps);
+            
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+            
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style)));
+            ```
+            ```javascript
+            import { css } from 'styled-components';
+            
+            export default css`
+              .custom-fields-row td {
+                width: 50px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+            `;
+            ```
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
+            keep 20 records in every page, add one action for each row for deleting, with dummy function to be implemented. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { injectIntl, intlShape } from 'react-intl';
+            import PropTypes from 'prop-types';
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux';
+            import { CapTable, CapSpin, CapHeading, CapMenu, CapDropdown, CapIcon } from '@capillarytech/cap-ui-library';
+            import PageTemplate from '../../templates/PageTemplate';
+            import { makeSelectCustomFields } from './selectors';
+            import style from './style';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            
+            const CustomFieldsList = ({ className, customFields, actions }) => {
+                const { data, fetching } = customFields;
+                
+                const [pagination, setPagination] = useState({ 
+                  pageSize: 20, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+                });
+            
+                useEffect(() => {
+                    actions.fetchCustomFields();
+                }, []);
+                
+                const getCustomFieldsDataSource = () => data;
+            
+                const handleDelete = (record) => {
+                    // Dummy function to be implemented for deleting custom field
+                    console.log('Deleting custom field:', record);
+                };
+            
+                const handleActionsMenuClick = (e) => {
+                  e.stopPropagation();
+                }
+            
+                const getCustomFieldsTableColumns = () => {
+                    const columns = [
+                        { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                        { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                        { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                        { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                        { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                        { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                        // include the below actions column in the table only when requested
+                        {
+                            dataIndex: 'actions',
+                            key: 'actions',
+                            title: <CapHeading type="h5">Actions</CapHeading>,
+                            render: (text, record) => (
+                                <CapDropdown
+                                    overlay={(
+                                        <CapMenu onClick={handleActionsMenuClick}>
+                                            <CapMenu.Item key="delete" onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                                        </CapMenu>
+                                    )}
+                                >
+                                    <CapIcon type="more" aria-label="Action menu icon" />
+                                </CapDropdown>
+                            ),
+                        },
+                    ];
+                    const columnWidth = `${Math.floor(100/columns.length)}%`;
+                    return columns.map(column => ({
+                        ...column,
+                        width: columnWidth,
+                    }));
+                };
+            
+                return (
+                <div className={className}>
+                    <PageTemplate>
+                        <CapSpin spinning={fetching}>
+                            <CapTable
+                                className="custom-fields-list-table"
+                                columns={getCustomFieldsTableColumns()}
+                                dataSource={getCustomFieldsDataSource()}
+                                rowKey="id"
+                                rowSelection={null}
+                                identifier="customFieldsList"
+                                pagination={pagination}
+                                scroll={{ y: 500 }}
+                                infinteScroll={false}
+                                showLoader={!customFields}
+                                rowClassName="row-class-name"
+                            />
+                        </CapSpin>
+                    </PageTemplate>
+                </div>
+                );
+            };
+            
+            CustomFieldsList.propTypes = {
+                customFields: PropTypes.array,
+                actions: PropTypes.object,
+                intl: intlShape.isRequired,
+            };
+            
+            const mapStateToProps = createStructuredSelector({
+                customFields: makeSelectCustomFields(),
+            });
+            
+            function mapDispatchToProps(dispatch) {
+                return {
+                    actions: bindActionCreators(actions, dispatch),
+                };
+            }
+            
+            const withConnect = connect(
+                mapStateToProps,
+                mapDispatchToProps,
+            );
+            
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+            
+            export default compose(
+                withSaga,
+                withReducer,
+                withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(CustomFieldsList, 'clearData'), style))
+            );
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's extended fields in a tabular format. No need to add actions column in the table.
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"}},\"action\":{\"api\":\"/v2/extendedFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            // Import necessary libraries and components
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { injectIntl, intlShape } from 'react-intl';
+            import PropTypes from 'prop-types';
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux';
+            import moment from 'moment';
+            
+            // Import capillary react sdk utils
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            
+            // Import style, actions, constants, saga, reducers and selectors
+            import style from './style';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectExtendedFields } from './selectors';
+            
+            import PageTemplate from '../../templates/PageTemplate';
+            import { CapTable, CapSpin, CapHeading } from '@capillarytech/cap-ui-library';
+            
+            const ExtendedFieldsList = ({ className, extendedFields, actions, intl }) => {
+                useEffect(() => {
+                    actions.fetchExtendedFields();
+                }, []);
+                
+                const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+                });
+            
+                // Function to generate columns for the table
+                const getExtendedFieldsTableColumns = () => {
+                    return [
+                        { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                        { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                        { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                        { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                        { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                        { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> }
+                    ];
+                };
+            
+                return (
+                <div className={className}>
+                    <PageTemplate>
+                        <CapSpin spinning={extendedFields.fetching}>
+                            <CapTable
+                                className="extended-fields-table"
+                                columns={getExtendedFieldsTableColumns()}
+                                dataSource={extendedFields.data}
+                                rowKey="name"
+                                rowSelection={null}
+                                identifier="extendedFieldsList"
+                                pagination={pagination}
+                                scroll={{ y: 500 }}
+                                infinteScroll={false}
+                                showLoader={extendedFields.fetching}
+                            />
+                        </CapSpin>
+                    </PageTemplate>
+                </div>
+                );
+            };
+            
+            // Define component prop types
+            ExtendedFieldsList.propTypes = {
+                extendedFields: PropTypes.object,
+                actions: PropTypes.object,
+                intl: intlShape.isRequired,
+            };
+            
+            // Create props from redux state
+            const mapStateToProps = createStructuredSelector({
+                extendedFields: makeSelectExtendedFields()
+            });
+            
+            // Map actions to props
+            function mapDispatchToProps(dispatch) {
+                return {
+                    actions: bindActionCreators(actions, dispatch),
+                };
+            }
+            
+            const withConnect = connect(
+                mapStateToProps,
+                mapDispatchToProps,
+            );
+            
+            // Inject saga and reducer
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}-extendedFields`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}-extendedFields`, reducer });
+            
+            export default compose(
+                withSaga,
+                withReducer,
+                withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(ExtendedFieldsList, "clearData"), style))
+            );
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's extended fields in a tabular format. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"}},\"action\":{\"api\":\"/v2/extendedFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            // Import necessary libraries and components
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { injectIntl, intlShape } from 'react-intl';
+            import PropTypes from 'prop-types';
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux';
+            import moment from 'moment';
+
+            // Import capillary react sdk utils
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+
+            // Import style, actions, constants, saga, reducers and selectors
+            import style from './style';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectExtendedFields } from './selectors';
+
+            import PageTemplate from '../../templates/PageTemplate';
+            import { CapTable, CapSpin, CapHeading } from '@capillarytech/cap-ui-library';
+
+            const ExtendedFieldsList = ({ className, extendedFields, actions, intl }) => {
+                useEffect(() => {
+                    actions.fetchExtendedFields();
+                }, []);
+                
+                const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+                });
+
+                // Function to generate columns for the table
+                const getExtendedFieldsTableColumns = () => {
+                    return [
+                        { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                        { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                        { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                        { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                        { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                        { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> }
+                    ];
+                };
+
+                return (
+                <div className={className}>
+                    <PageTemplate>
+                        <CapSpin spinning={extendedFields.fetching}>
+                            <CapTable
+                                className="extended-fields-table"
+                                columns={getExtendedFieldsTableColumns()}
+                                dataSource={extendedFields.data}
+                                rowKey="name"
+                                rowSelection={null}
+                                identifier="extendedFieldsList"
+                                pagination={pagination}
+                                scroll={{ y: 500 }}
+                                infinteScroll={false}
+                                showLoader={extendedFields.fetching}
+                            />
+                        </CapSpin>
+                    </PageTemplate>
+                </div>
+                );
+            };
+
+            // Define component prop types
+            ExtendedFieldsList.propTypes = {
+                extendedFields: PropTypes.object,
+                actions: PropTypes.object,
+                intl: intlShape.isRequired,
+            };
+
+            // Create props from redux state
+            const mapStateToProps = createStructuredSelector({
+                extendedFields: makeSelectExtendedFields()
+            });
+
+            // Map actions to props
+            function mapDispatchToProps(dispatch) {
+                return {
+                    actions: bindActionCreators(actions, dispatch),
+                };
+            }
+
+            const withConnect = connect(
+                mapStateToProps,
+                mapDispatchToProps,
+            );
+
+            // Inject saga and reducer
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}-extendedFields`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}-extendedFields`, reducer });
+
+            export default compose(
+                withSaga,
+                withReducer,
+                withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(ExtendedFieldsList, "clearData"), style))
+            );
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
+            Also, add edit and delete actions for the rows of the table with dummy functions to be implemented. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { connect } from 'react-redux';
+            import { createStructuredSelector } from 'reselect';
+            import { injectIntl, intlShape } from 'react-intl';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
+            import PageTemplate from '../../templates/PageTemplate';
+            import style from './style';
+
+            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
+
+              const { data, fetching } = customFieldsData;
+
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
+
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
+
+              const handleActionsMenuClick = e => {
+                e.domEvent.stopPropagation();
+              };
+
+              const handleActionsMenuDropdownClick = e => {
+                e.stopPropagation();
+              };
+
+              const handleEdit = record => {
+                console.log('Edit record:', record);
+              };
+
+              const handleDelete = record => {
+                console.log('Delete record:', record);
+              };
+
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  // add this action column only if requested
+                  {
+                      dataIndex: '',
+                      key: 'actions',
+                      title: '',
+                      align: 'center',
+                      width: '8%',
+                      render: (text, record) => (
+                        <CapRow>
+                          <CapDropdown onClick={handleActionsMenuDropdownClick} overlay={(
+                            <CapMenu onClick={handleActionsMenuClick}>
+                              <CapMenu.Item onClick={() => handleEdit(record)}>Edit</CapMenu.Item>
+                              <CapMenu.Item onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                            </CapMenu>
+                          )}>
+                            <CapIcon type="more" aria-label="Action menu icon" />
+                          </CapDropdown>
+                        </CapRow>
+                      )
+                    },
+                ];
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
+                const finalColumns = columns.map(col => ({
+                  ...col,
+                  width: columnWidth,
+                }));
+                return finalColumns;
+              };
+
+              return (
+                  <div className={className}>
+                    <PageTemplate>
+                      <CapRow>
+                        <CapColumn span={24}>
+                          <CapHeading type="h2">Custom Fields</CapHeading>
+                        </CapColumn>
+                        <CapColumn span={24}>
+                          <CapSpin spinning={fetching}>
+                            <CapTable
+                              className="custom-fields-table"
+                              columns={getCustomFieldsTableColumns()}
+                              dataSource={data}
+                              rowKey="id"
+                              rowSelection={null}
+                              identifier="customFieldsTable"
+                              pagination={pagination}
+                              scroll={{ y: 500 }}
+                              infinteScroll={false}
+                              showLoader={false}
+                              rowClassName="custom-fields-row"
+                              onRow={record => {
+                                return {
+                                  onClick: event => {
+                                    /* handle row click */
+                                  },
+                                };
+                              }}
+                            />
+                          </CapSpin>
+                        </CapColumn>
+                      </CapRow>
+                    </PageTemplate>
+                  </div>
+              );
+            };
+
+            CustomFieldsTable.propTypes = {
+              customFieldsData: PropTypes.object.isRequired,
+              actions: PropTypes.object.isRequired,
+              intl: intlShape.isRequired,
+            };
+
+            const mapStateToProps = createStructuredSelector({
+              customFieldsData: makeSelectCustomFields(),
+            });
+
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+
+            const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style))
+            );
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
+            Also, add edit and delete actions for the rows of the table with dummy functions to be implemented. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { connect } from 'react-redux';
+            import { createStructuredSelector } from 'reselect';
+            import { injectIntl, intlShape } from 'react-intl';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
+            import PageTemplate from '../../templates/PageTemplate';
+            import style from './style';
+
+            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
+
+              // extract data and fetching boolean flag from props data in redux
+              const { data, fetching } = customFieldsData;
+
+              // define pagination state variable for table type components
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
+
+              // call action to load custom fields on component mount
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
+
+              // stop event propagation on menu click
+              const handleActionsMenuClick = e => {
+                e.domEvent.stopPropagation();
+              };
+
+              // stop event propagation on dropdown click
+              const handleActionsMenuDropdownClick = e => {
+                e.stopPropagation();
+              };
+
+              // implement edit record
+              const handleEdit = record => {
+                console.log('Edit record:', record);
+              };
+
+              // implement delete record
+              const handleDelete = record => {
+                console.log('Delete record:', record);
+              };
+
+              // prepare all columns for table
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  // add this action column only if actions column is needed
+                  {
+                      dataIndex: '',
+                      key: 'actions',
+                      title: '',
+                      align: 'center',
+                      render: (text, record) => (
+                        <CapRow>
+                          <CapDropdown onClick={handleActionsMenuDropdownClick} overlay={(
+                            <CapMenu onClick={handleActionsMenuClick}>
+                              <CapMenu.Item onClick={() => handleEdit(record)}>Edit</CapMenu.Item>
+                              <CapMenu.Item onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                            </CapMenu>
+                          )}>
+                            <CapIcon type="more" aria-label="Action menu icon" />
+                          </CapDropdown>
+                        </CapRow>
+                      )
+                    },
+                ];
+                // get column width
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
+                // append column width and send back columns list for table
+                const finalColumns = columns.map(col => ({
+                  ...col,
+                  width: columnWidth,
+                }));
+                return finalColumns;
+              };
+
+              return (
+                  <div className={className}>
+                    <PageTemplate>
+                      <CapRow>
+                        <CapColumn span={24}>
+                          <CapHeading type="h2">Custom Fields</CapHeading>
+                        </CapColumn>
+                        <CapColumn span={24}>
+                          <CapSpin spinning={fetching}>
+                            <CapTable
+                              className="custom-fields-table"
+                              columns={getCustomFieldsTableColumns()}
+                              dataSource={data}
+                              rowKey="id"
+                              rowSelection={null}
+                              identifier="customFieldsTable"
+                              pagination={pagination}
+                              scroll={{ y: 500 }}
+                              infinteScroll={false}
+                              showLoader={false}
+                              rowClassName="custom-fields-row"
+                              onRow={record => {
+                                return {
+                                  onClick: event => {
+                                    /* handle row click */
+                                  },
+                                };
+                              }}
+                            />
+                          </CapSpin>
+                        </CapColumn>
+                      </CapRow>
+                    </PageTemplate>
+                  </div>
+              );
+            };
+
+            // define prop types of component
+            CustomFieldsTable.propTypes = {
+              customFieldsData: PropTypes.object.isRequired,
+              actions: PropTypes.object.isRequired,
+              intl: intlShape.isRequired,
+            };
+
+            // map redux state to props of component using selector methods
+            const mapStateToProps = createStructuredSelector({
+              customFieldsData: makeSelectCustomFields(),
+            });
+
+            // map actions to props of component
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+
+            // declare with connect for state and actions props
+            const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+            // inject saga and reducer with unique key using CURRENT_APP_NAME
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+
+            // export component
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style))
+            );
+        """
+    },
+]
+
+chat_history = [
+    {
+        "role": "user",
+        "content": """
+            Create a simple react component to list all the organization's extended fields in a tabular format. Do not add actions on the rows. 
+            Consider that the extended fields data is coming to the component as a prop with data(list) and loading (boolean) attributes.
+            Keep 15 rows per page and select 3rd page by default. 
+            Refer to the below extended field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"enableAuditTrail\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPiiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isPsiData\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}}}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useState } from 'react';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+
+            const ExtendedFieldsTable = ({ data, loading }) => {
+                const [pagination, setPagination] = useState({ 
+                  pageSize: 15, // based on user input, limit of records per page
+                  current: 3, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+                });
+                
+                const getExtendedFieldsTableColumns = () => {
+                    return [
+                        { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                        { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                        { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                        { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                        { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                        { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                        { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                        { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                        { dataIndex: 'enableAuditTrail', key: 'enableAuditTrail', title: <CapHeading type="h5">Audit Trail</CapHeading> },
+                        { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                        { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                    ];
+                };
+
+                return (
+                    <CapRow>
+                        <CapColumn span={24}>
+                            <CapHeading type="h2">Organization's Extended Fields</CapHeading>
+                        </CapColumn>
+                        <CapColumn span={24}>
+                            <CapSpin spinning={loading}>
+                                <CapTable
+                                    className="extended-fields-table"
+                                    columns={getExtendedFieldsTableColumns()}
+                                    dataSource={data}
+                                    rowKey="id" // Assuming 'id' is the unique key for each extended field
+                                    rowSelection={null}
+                                    identifier="extendedFieldsTable"
+                                    pagination={pagination}
+                                    scroll={{ y: 500 }}
+                                    infinteScroll={false}
+                                    showLoader={false}
+                                    rowClassName="row-class-name"
+                                />
+                            </CapSpin>
+                        </CapColumn>
+                    </CapRow>
+                );
+            };
+
+            ExtendedFieldsTable.propTypes = {
+                data: PropTypes.array.isRequired,
+                loading: PropTypes.bool.isRequired,
+            };
+
+            export default ExtendedFieldsTable;
+        """
+    },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to capture customer information and make an API call to save the customer details to server from the below specs:
+            {
+              "entity": {
+                "title": {
+                  "type": "enum",
+                  "defaultValue": "mr",
+                  "uiType": "dropdown",
+                  "possibleValues": [
+                    "mr",
+                    "mrs",
+                    "ms",
+                    "others"
+                  ]
+                },
+                "firstName": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "middleName": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "lastName": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "dob": {
+                  "type": "date",
+                  "defaultValue": "current_date"
+                },
+                "gender": {
+                  "type": "enum",
+                  "defaultValue": "male",
+                  "uiType": "radio",
+                  "possibleValues": [
+                    "male",
+                    "female",
+                    "others"
+                  ]
+                },
+                "mobile": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "houseFlatNo": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "street": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "landmark": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "city": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "district": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "country": {
+                  "type": "enum",
+                  "defaultValue": "india",
+                  "uiType": "dropdown",
+                  "possibleValues": [
+                    "india",
+                    "usa",
+                    "uk"
+                  ]
+                },
+                "pincode": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "passportNo": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "occupation": {
+                  "type": "enum",
+                  "defaultValue": "service",
+                  "uiType": "dropdown",
+                  "possibleValues": [
+                    "service",
+                    "business",
+                    "artist",
+                    "others"
+                  ]
+                },
+                "parentFFN": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "nationality": {
+                  "type": "string",
+                  "defaultValue": ""
+                },
+                "passportIssualCountry": {
+                  "type": "enum",
+                  "defaultValue": "india",
+                  "uiType": "dropdown",
+                  "possibleValues": [
+                    "india",
+                    "usa",
+                    "uk"
+                  ]
+                },
+                "passportExpiry": {
+                  "type": "date",
+                  "defaultValue": "current_date"
+                }
+              },
+              "action": {
+                  "save": {
+                    "api": "/saveCustomer",
+                    "method": "POST"
+                  }
+              }
+            }
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            import React, { useState } from 'react'; // import react
+            import { compose, bindActionCreators } from 'redux'; // import action binding utils from redux
+            import { injectIntl, intlShape } from 'react-intl'; // import for using i18n in component
+            import PropTypes from 'prop-types'; // import proptypes for definition
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux'; // import connect for redux
+            import moment from 'moment';
+
+            // import capillary react sdk utils
+            import { injectSaga,injectReducer,clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+
+            // import style, actions, constants, saga, reducers and selectors
+            import style from './style';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomerInformation } from './selectors';
+
+            import PageTemplate from '../../templates/PageTemplate';
+
+            // import capillary UI library components
+            import { CapRow, CapColumn, CapInput, CapSelect, CapRadioGroup, CapDatePicker, CapButton, CapHeading, CapLabel } from '@capillarytech/cap-ui-library';
+
+            export const CustomerInformationForm = ({
+              className,
+              customerInformation,
+              actions,
+              intl,
+            }) => {
+              const [customerData, setCustomerData] = useState({
                   title: 'mr',
                   firstName: '',
                   middleName: '',
@@ -779,640 +2018,284 @@ chat_history_2 = [
                   country: 'india',
                   pincode: '',
                   passportNo: '',
-                  occupation: 'artist',
+                  occupation: 'service',
                   parentFFN: '',
-                  nationality: 'indian',
-                  passportIssualCountry: '',
-                  passportExpiry: moment()
-                });
-            
-                // call the prop method to save data
-                const saveData = () => {
-                  // Call API to save customerInfo
-                  console.log('Saving customer info:', customerInfo);
-                  saveDataForCustomer(customerInfo);
-                };
-            
-                // clear the form
-                const clearData = () => {
-                    setCustomerInfo({
-                        title: 'mr',
-                        firstName: '',
-                        middleName: '',
-                        lastName: '',
-                        dob: moment(),
-                        gender: 'male',
-                        mobile: '',
-                        houseFlatNo: '',
-                        street: '',
-                        landmark: '',
-                        city: '',
-                        district: '',
-                        country: 'india',
-                        pincode: '',
-                        passportNo: '',
-                        occupation: 'artist',
-                        parentFFN: '',
-                        nationality: 'indian',
-                        passportIssualCountry: '',
-                        passportExpiry: moment()
-                    });
-                };
-            
-                return (
+                  nationality: '',
+                  passportIssualCountry: 'india',
+                  passportExpiry: moment(),
+              });
+
+              const handleSaveCustomer = () => {
+               // make actions call on CTA click
+                actions.saveCustomerData(customerData);
+              };
+
+              return (
+              <div className={className}>
                   <PageTemplate>
-                    <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
-                      <CapColumn span={24}>
-                        <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Personal Information</CapHeading>
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapSelect
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Title</CapLabel>}
-                            options={[{ value: 'mr', label: 'Mr' }, { value: 'mrs', label: 'Mrs' }]}
-                            value={customerInfo.title}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, title: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>First Name</CapLabel>}
-                            value={customerInfo.firstName}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, firstName: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Middle Name</CapLabel>}
-                            value={customerInfo.middleName}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, middleName: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Last Name</CapLabel>}
-                            value={customerInfo.lastName}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, lastName: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapDatePicker
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>DOB</CapLabel>}
-                            value={customerInfo.dob}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, dob: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapRadioGroup
-                            value={customerInfo.gender}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, gender: e.target.value })}
-                            style={{ width: '100%' }}
-                        >
-                          <CapRow>
-                            <CapColumn span={6}>
-                                <CapLabel type="label2" style={{ textAlign: 'right' }}>Gender</CapLabel>
-                            </CapColumn>
-                            <CapColumn span={6}>
-                                <CapRadio value="male">Male</CapRadio>
-                            </CapColumn>
-                            <CapColumn span={6}>
-                                <CapRadio value="female">Female</CapRadio>
-                            </CapColumn>
-                            <CapColumn span={6}>
-                                <CapRadio value="others">Others</CapRadio>
-                            </CapColumn>
-                          </CapRow>
-                        </CapRadioGroup>
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Mobile</CapLabel>}
-                            value={customerInfo.mobile}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, mobile: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                    </CapRow>
-            
-                    <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
-                      <CapColumn span={24}>
-                        <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Contact Information</CapHeading>
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>House / Flat No</CapLabel>}
-                            value={customerInfo.houseFlatNo}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, houseFlatNo: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Street</CapLabel>}
-                            value={customerInfo.street}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, street: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Landmark</CapLabel>}
-                            value={customerInfo.landmark}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, landmark: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>City</CapLabel>}
-                            value={customerInfo.city}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>District</CapLabel>}
-                            value={customerInfo.district}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, district: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapSelect
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Country</CapLabel>}
-                            options={[{ value: 'india', label: 'India' }, { value: 'us', label: 'US' }, { value: 'uk', label: 'UK' }, { value: 'others', label: 'Others' }]}
-                            value={customerInfo.country}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, country: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Pincode</CapLabel>}
-                            value={customerInfo.pincode}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, pincode: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                    </CapRow>
-            
-                    <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
-                      <CapColumn span={24}>
-                        <CapHeading type="h3" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '16px', marginBottom: '10px', textAlign: 'left' }}>Other Information</CapHeading>
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport No</CapLabel>}
-                            value={customerInfo.passportNo}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, passportNo: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapSelect
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Occupation</CapLabel>}
-                            options={[{ value: 'artist', label: 'Artist' }, { value: 'banking', label: 'Banking' }, { value: 'business', label: 'Business' }, { value: 'education', label: 'Education' }, { value: 'services', label: 'Services' }, { value: 'others', label: 'Others' }]}
-                            value={customerInfo.occupation}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, occupation: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Parent FFN</CapLabel>}
-                            value={customerInfo.parentFFN}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, parentFFN: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapSelect
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Nationality</CapLabel>}
-                            options={[{ value: 'indian', label: 'Indian' }, { value: 'american', label: 'American' }, { value: 'british', label: 'British' }, { value: 'others', label: 'Others' }]}
-                            value={customerInfo.nationality}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, nationality: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapInput
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Issual Country</CapLabel>}
-                            value={customerInfo.passportIssualCountry}
-                            onChange={(e) => setCustomerInfo({ ...customerInfo, passportIssualCountry: e.target.value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                      <CapColumn span={12} style={{ padding: '8px 16px' }}>
-                        <CapDatePicker
-                            label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Expiry</CapLabel>}
-                            value={customerInfo.passportExpiry}
-                            onChange={(value) => setCustomerInfo({ ...customerInfo, passportExpiry: value })}
-                            style={{ width: '100%' }}
-                        />
-                      </CapColumn>
-                    </CapRow>
-            
-                    <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
-                      <CapColumn span={24} style={{ padding: '8px 16px' }}>
-                        <CapButton
-                            type="primary"
-                            onClick={saveData}
-                            style={{ margin: '0 12px' }}
-                        >
-                            Save
-                        </CapButton>
-                        <CapButton
-                            type="secondary"
-                            onClick={clearData}
-                            style={{ margin: '0 12px' }}
-                        >
-                            Cancel
-                        </CapButton>
-                      </CapColumn>
-                    </CapRow>
-            
+                      <CapRow>
+                          <CapColumn span={24}>
+                              <CapHeading type="h2">Customer Information</CapHeading>
+                          </CapColumn>
+                      </CapRow>
+                      <CapRow>
+                          <CapColumn span={24}>
+                              <CapSelect
+                                  label={<CapLabel type="label2" style={{textAlign: 'left'}}>Title</CapLabel>}
+                                  options={[
+                                      { value: 'mr', label: 'Mr' },
+                                      { value: 'mrs', label: 'Mrs' },
+                                      { value: 'ms', label: 'Ms' },
+                                      { value: 'others', label: 'Others' }
+                                  ]}
+                                  value={customerData.title}
+                                  onChange={(value) => setCustomerData({ ...customerData, title: value })}
+                              />
+                          </CapColumn>
+                          <CapColumn span={24}>
+                              <CapInput
+                                  label={<CapLabel type="label2" style={{textAlign: 'left'}}>First Name</CapLabel>}
+                                  value={customerData.firstName}
+                                  onChange={(e) => setCustomerData({ ...customerData, firstName: e.target.value })}
+                              />
+                          </CapColumn>
+                          <CapColumn span={24}>
+                              <CapInput
+                                  label={<CapLabel type="label2" style={{textAlign: 'left'}}>Last Name</CapLabel>}
+                                  value={customerData.lastName}
+                                  onChange={(e) => setCustomerData({ ...customerData, lastName: e.target.value })}
+                              />
+                          </CapColumn>
+                      </CapRow>
+                      {/* Add fields as per the specifications in schema */}
+                      <CapButton
+                          className="save-button"
+                          type="primary"
+                          onClick={handleSaveCustomer}
+                      >
+                          Save Customer
+                      </CapButton>
                   </PageTemplate>
-                );
+              </div>
+              );
             };
-            
-            export default CustomerFormPage;
+
+            // define component prop types
+            CustomerInformationForm.propTypes = {
+              customerInformation: PropTypes.object,
+              actions: PropTypes.object,
+              intl: intlShape.isRequired,
+            };
+
+            // create props from redux state
+            const mapStateToProps = createStructuredSelector({
+              customerInformation: makeSelectCustomerInformation()
+            });
+
+            // map actions to props
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+
+            const withConnect = connect(
+              mapStateToProps,
+              mapDispatchToProps,
+            );
+
+            // inject saga and reducer
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}-customerInformation`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}-customerInformation`, reducer });
+
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(
+              injectIntl(withStyles(clearDataOnUnmount(CustomerInformationForm, "clearData"), style))
+            );
         """
     },
     {
         "role": "user",
         "content": """
-            Please use the context and instructions provided to you and write a Capillary specific React component as accurately as possible
-            Component name: CustomerFormPage
-            Form based UI with the below-mentioned sections to capture a customer’s details in customerInfo object and save that to the server.
-            Please prepare all the form data in single level JSON object as it's needed for the API to be called.
-            All fields in all the sections are mandatory to be filled up
-            
-            Sections required in the UI
-            1. Personal information -
-            
-            Specifications:
-            a. Row layout with 4 columns in each row, 6px padding on each row, 8px bottom margin
-            b. Each column in the rows will have 4px top & bottom padding, 8px left & right padding
-            c. Add section heading at top before section fields, heading type h2, text-align left, color #5E6C84, 20px top margin, 8px left margin, 10px bottom margin, text should be left aligned
-            
-            Fields:
-            a. title (select, options - [mr, mrs, ms], 100% width)
-            b. first name (input, 100% width)
-            c. middle name (input, 100% width)
-            d. last name (input, 100% width)
-            e. DOB (date, 100% width)
-            f. gender (radio button, options - [male, female, trans, others], row layout with each option coming as a column inside along with the label)
-            g. mobile (input, 100% width)
-            
-            2. Contact information -
-            
-            Specifications:
-            a. Row layout with 2 columns in each row, 10px padding on each row
-            b. Each column in the rows will have 8px padding
-            c. Add section heading at top before section fields, heading type h2, text-align left, color #b31313, 20px top margin, 8px left margin, 10px bottom margin, text should be left aligned
-            
-            Fields:
-            a. house / flat no (input, 100% width)
-            b. street (input, 100% width)
-            c. landmark (input, 100% width)
-            d. city (input, 100% width)
-            e. district (input, 100% width)
-            f. country (select, options - [india, us, uk, others], 100% width)
-            g. pincode (input, 100% width)
-            
-            3. Other information -
-            
-            Specifications:
-            a. Row layout with 3 columns in each row, 12px padding on each row
-            b. Each column in the rows will have 12px padding
-            c. Add section heading at top before section fields, heading type h2, text-align left, color #b31313, 20px top margin, 8px left margin, 10px bottom margin, text should be right aligned
-            
-            Fields:
-            a. passport no (input, 100% width)
-            b. occupation (select, options - [artist, banking, business, education, services, others], 100% width)
-            c. parent FFN (input, 100% width)
-            d. nationality (select, options - [indian, american, british, others], 100% width)
-            e. passport issual country (input, 100% width)
-            f. passport expiry (date, 100% width)
-            
-            4. Actions -
-            
-            Specifications:
-            a. Row layout with 6 columns in each row, 4px padding on each row, 6px bottom margin
-            b. Each column in the rows will have 8px top & bottom padding, 16px left & right padding
-            c. Each field will have 12px left and right margin
-            
-            Fields:
-            a. Save (button, primary, onclick call props method saveDataForCustomer() with the customer info)
-            b. Cancel (button, secondary, onclick clear all state data)
+            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
+            Also, add edit and delete actions for the rows of the table with dummy functions to be implemented. 
+            Refer to the below custom field entity schema:
+            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
         """
     },
     {
         "role": "assistant",
         "content": """
-            import React, { useState } from 'react';
-            import moment from 'moment';
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { connect } from 'react-redux';
+            import { createStructuredSelector } from 'reselect';
+            import { injectIntl, intlShape } from 'react-intl';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
+            import PropTypes from 'prop-types';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
             import PageTemplate from '../../templates/PageTemplate';
-            import {
-                CapRow,
-                CapColumn,
-                CapHeading,
-                CapInput,
-                CapSelect,
-                CapRadioGroup,
-                CapRadio,
-                CapDatePicker,
-                CapButton,
-                CapLabel,
-            } from '@capillarytech/cap-ui-library';
-            
-            const CustomerFormPage = ({ saveDataForCustomer }) => {
-                const [customerInfo, setCustomerInfo] = useState({
-                    title: 'mr',
-                    firstName: '',
-                    middleName: '',
-                    lastName: '',
-                    dob: moment(),
-                    gender: 'male',
-                    mobile: '',
-                    houseFlatNo: '',
-                    street: '',
-                    landmark: '',
-                    city: '',
-                    district: '',
-                    country: 'india',
-                    pincode: '',
-                    passportNo: '',
-                    occupation: 'artist',
-                    parentFFN: '',
-                    nationality: 'indian',
-                    passportIssualCountry: '',
-                    passportExpiry: moment()
-                });
-            
-                const saveData = () => {
-                    console.log('Saving customer info:', customerInfo);
-                    saveDataForCustomer(customerInfo);
-                };
-            
-                const clearData = () => {
-                    setCustomerInfo({
-                        title: 'mr',
-                        firstName: '',
-                        middleName: '',
-                        lastName: '',
-                        dob: moment(),
-                        gender: 'male',
-                        mobile: '',
-                        houseFlatNo: '',
-                        street: '',
-                        landmark: '',
-                        city: '',
-                        district: '',
-                        country: 'india',
-                        pincode: '',
-                        passportNo: '',
-                        occupation: 'artist',
-                        parentFFN: '',
-                        nationality: 'indian',
-                        passportIssualCountry: '',
-                        passportExpiry: moment()
-                    });
-                };
-            
-                return (
+            import style from './style';
+
+            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
+
+              // extract data and fetching boolean flag from props data in redux
+              const { data, fetching } = customFieldsData;
+
+              // define pagination state variable for table type components
+              const [pagination, setPagination] = useState({ 
+                  pageSize: 10, // based on user input, limit of records per page
+                  current: 1, // based on user input, page selected by default
+                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
+
+              // call action to load custom fields on component mount
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
+
+              // stop event propagation on menu click
+              const handleActionsMenuClick = e => {
+                e.domEvent.stopPropagation();
+              };
+                
+              // stop event propagation on dropdown click
+              const handleActionsMenuDropdownClick = e => {
+                e.stopPropagation();
+              };
+
+              // implement edit record
+              const handleEdit = record => {
+                console.log('Edit record:', record);
+              };
+
+              // implement delete record
+              const handleDelete = record => {
+                console.log('Delete record:', record);
+              };
+
+              // prepare all columns for table
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  // add this action column only if actions column is needed
+                  {
+                      dataIndex: '',
+                      key: 'actions',
+                      title: '',
+                      align: 'center',
+                      render: (text, record) => (
+                        <CapRow>
+                          <CapDropdown onClick={handleActionsMenuDropdownClick} overlay={(
+                            <CapMenu onClick={handleActionsMenuClick}>
+                              <CapMenu.Item onClick={() => handleEdit(record)}>Edit</CapMenu.Item>
+                              <CapMenu.Item onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                            </CapMenu>
+                          )}>
+                            <CapIcon type="more" aria-label="Action menu icon" />
+                          </CapDropdown>
+                        </CapRow>
+                      )
+                    },
+                ];
+                // get column width
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
+                // append column width and send back columns list for table
+                const finalColumns = columns.map(col => ({
+                  ...col,
+                  width: columnWidth,
+                }));
+                return finalColumns;
+              };
+
+              return (
+                  <div className={className}>
                     <PageTemplate>
-                        <CapRow style={{ padding: '6px', marginBottom: '8px' }}>
-                            <CapColumn span={24}>
-                                <CapHeading type="h2" style={{ color: '#5E6C84', marginTop: '20px', marginLeft: '8px', marginBottom: '10px', textAlign: 'left' }}>Personal Information</CapHeading>
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapSelect
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Title</CapLabel>}
-                                    options={[{ value: 'mr', label: 'Mr' }, { value: 'mrs', label: 'Mrs' }, { value: 'ms', label: 'Ms' }]}
-                                    value={customerInfo.title}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, title: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>First Name</CapLabel>}
-                                    value={customerInfo.firstName}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, firstName: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Middle Name</CapLabel>}
-                                    value={customerInfo.middleName}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, middleName: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Last Name</CapLabel>}
-                                    value={customerInfo.lastName}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, lastName: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapDatePicker
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>DOB</CapLabel>}
-                                    value={customerInfo.dob}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, dob: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapRadioGroup
-                                    value={customerInfo.gender}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, gender: e.target.value })}
-                                    style={{ width: '100%' }}
-                                >
-                                    <CapRow>
-                                        <CapColumn span={4}>
-                                            <CapLabel type="label2" style={{ textAlign: 'right' }}>Gender</CapLabel>
-                                        </CapColumn>
-                                        <CapColumn span={4}>
-                                            <CapRadio value="male">Male</CapRadio>
-                                        </CapColumn>
-                                        <CapColumn span={4}>
-                                            <CapRadio value="female">Female</CapRadio>
-                                        </CapColumn>
-                                        <CapColumn span={4}>
-                                            <CapRadio value="trans">Trans</CapRadio>
-                                        </CapColumn>
-                                        <CapColumn span={4}>
-                                            <CapRadio value="others">Others</CapRadio>
-                                        </CapColumn>
-                                    </CapRow>
-                                </CapRadioGroup>
-                            </CapColumn>
-                            <CapColumn span={6} style={{ padding: '4px 8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Mobile</CapLabel>}
-                                    value={customerInfo.mobile}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, mobile: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                        </CapRow>
-            
-                        <CapRow style={{ padding: '10px' }}>
-                            <CapColumn span={24}>
-                                <CapHeading type="h2" style={{ color: '#b31313', marginTop: '20px', marginLeft: '8px', marginBottom: '10px', textAlign: 'left' }}>Contact Information</CapHeading>
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>House / Flat No</CapLabel>}
-                                    value={customerInfo.houseFlatNo}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, houseFlatNo: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Street</CapLabel>}
-                                    value={customerInfo.street}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, street: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Landmark</CapLabel>}
-                                    value={customerInfo.landmark}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, landmark: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>City</CapLabel>}
-                                    value={customerInfo.city}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, city: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>District</CapLabel>}
-                                    value={customerInfo.district}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, district: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapSelect
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Country</CapLabel>}
-                                    options={[{ value: 'india', label: 'India' }, { value: 'us', label: 'US' }, { value: 'uk', label: 'UK' }, { value: 'others', label: 'Others' }]}
-                                    value={customerInfo.country}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, country: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={12} style={{ padding: '8px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Pincode</CapLabel>}
-                                    value={customerInfo.pincode}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, pincode: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                        </CapRow>
-            
-                        <CapRow style={{ padding: '12px' }}>
-                            <CapColumn span={24}>
-                                <CapHeading type="h2" style={{ color: '#b31313', marginTop: '20px', marginLeft: '8px', marginBottom: '10px', textAlign: 'left' }}>Other Information</CapHeading>
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport No</CapLabel>}
-                                    value={customerInfo.passportNo}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, passportNo: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapSelect
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Occupation</CapLabel>}
-                                    options={[{ value: 'artist', label: 'Artist' }, { value: 'banking', label: 'Banking' }, { value: 'business', label: 'Business' }, { value: 'education', label: 'Education' }, { value: 'services', label: 'Services' }, { value: 'others', label: 'Others' }]}
-                                    value={customerInfo.occupation}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, occupation: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Parent FFN</CapLabel>}
-                                    value={customerInfo.parentFFN}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, parentFFN: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapSelect
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Nationality</CapLabel>}
-                                    options={[{ value: 'indian', label: 'Indian' }, { value: 'american', label: 'American' }, { value: 'british', label: 'British' }, { value: 'others', label: 'Others' }]}
-                                    value={customerInfo.nationality}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, nationality: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapInput
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Issual Country</CapLabel>}
-                                    value={customerInfo.passportIssualCountry}
-                                    onChange={(e) => setCustomerInfo({ ...customerInfo, passportIssualCountry: e.target.value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                            <CapColumn span={8} style={{ padding: '12px' }}>
-                                <CapDatePicker
-                                    label={<CapLabel type="label2" style={{ textAlign: 'left' }}>Passport Expiry</CapLabel>}
-                                    value={customerInfo.passportExpiry}
-                                    onChange={(value) => setCustomerInfo({ ...customerInfo, passportExpiry: value })}
-                                    style={{ width: '100%' }}
-                                />
-                            </CapColumn>
-                        </CapRow>
-            
-                        <CapRow style={{ padding: '4px', marginBottom: '6px' }}>
-                            <CapColumn span={2} style={{ padding: '8px 16px' }}>
-                                <CapButton
-                                    type="primary"
-                                    onClick={saveData}
-                                    style={{ margin: '0 12px' }}
-                                >
-                                    Save
-                                </CapButton>
-                            </CapColumn>
-                            <CapColumn span={2} style={{ padding: '8px 16px' }}>
-                                <CapButton
-                                    type="secondary"
-                                    onClick={clearData}
-                                    style={{ margin: '0 12px' }}
-                                >
-                                    Cancel
-                                </CapButton>
-                            </CapColumn>
-                        </CapRow>
+                      <CapRow>
+                        <CapColumn span={24}>
+                          <CapHeading type="h2">Custom Fields</CapHeading>
+                        </CapColumn>
+                        <CapColumn span={24}>
+                          <CapSpin spinning={fetching}>
+                            <CapTable
+                              className="custom-fields-table"
+                              columns={getCustomFieldsTableColumns()}
+                              dataSource={data}
+                              rowKey="id"
+                              rowSelection={null}
+                              identifier="customFieldsTable"
+                              pagination={pagination}
+                              scroll={{ y: 500 }}
+                              infinteScroll={false}
+                              showLoader={false}
+                              rowClassName="custom-fields-row"
+                              onRow={record => {
+                                return {
+                                  onClick: event => {
+                                    /* handle row click */
+                                  },
+                                };
+                              }}
+                            />
+                          </CapSpin>
+                        </CapColumn>
+                      </CapRow>
                     </PageTemplate>
-                );
+                  </div>
+              );
             };
-            
-            export default CustomerFormPage;
+
+            // define prop types of component
+            CustomFieldsTable.propTypes = {
+              customFieldsData: PropTypes.object.isRequired,
+              actions: PropTypes.object.isRequired,
+              intl: intlShape.isRequired,
+            };
+
+            // map redux state to props of component using selector methods
+            const mapStateToProps = createStructuredSelector({
+              customFieldsData: makeSelectCustomFields(),
+            });
+
+            // map actions to props of component
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+
+            // declare with connect for state and actions props
+            const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+            // inject saga and reducer with unique key using CURRENT_APP_NAME
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+
+            // export component
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(
+                injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style))
+            );
         """
-    }
+    },
 ]
 
 base_instructions = [
@@ -1429,6 +2312,7 @@ base_instructions = [
             MOST IMPORTANT: [These instructions should be strictly followed while generating the component, treat it as a cheatsheet to help you generate components accurately]
             1. Library “moment” will be imported at the top of the component and used instead of the JavaScript Date class for date fields like “moment()”, do not format the moment object into string
             2. Wrap the entire generated component html inside the <PageTemplate> element imported like “import PageTemplate from ../../templates/PageTemplate” - always import this separately (do not forget this as this will give me the page layout styling)
+            2a. Wrap the <PageTemplate> element with `<div className={className}>` where className is received as a prop in the component, this is necessary for withStyles HOC to work in exporting the component along with included styles 
             3. Types of form elements to be replaced with custom UI library elements and their specifications are provided along with ui_library_schema JSON (all these elements should be imported from @capillarytech/cap-ui-library package) - always import this separately
             4. MANDATORY to import all elements matching the pattern /Cap(.*)/ from package "@capillarytech/cap-ui-library".
             5. Generate the entire component carefully, add style attributes to elements where they are specified
@@ -1477,7 +2361,7 @@ base_instructions = [
             35. In selector functions, state params will always have default value of `fromJS({})` 
             36. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
             37. For tables, generate field title and description from the attributes of the schema
-            38. For tables, each column width will be equal to Math.floor(100 / total number of fields), converted to a string with percentage(%) sign appended 
+            38. For tables, each column width will be equal to Math.floor(100 / total number of fields), converted to a string with percentage(%) sign appended, ALWAYS append width to the columns of the table 
             39. For tables, row key would be unique field in the schema, preferably some kind of id field
             40. For tables, keep all the columns of the table as the fields in the schema provided, irrespective of the data coming in response of the API
             41. From saga, always call the success and failure from actions object, main API call should be made on Api object, follow the example strictly
@@ -1487,6 +2371,9 @@ base_instructions = [
             45. Redux state managed components reading data from API through redux state, should import { data, fetching } from prop variable, fetching is a boolean variable to control CapSpin spinner when API is loading, data will be used to render the data on UI as read only
             46. For actions column, use CapDropdown and CapMenu combination as per example, on both CapMenu and CapDropdown add a onClick handler to stop event propagation so that action item click does not trigger a row click action on the table
             47. For redux state managed components, always strictly adhere to the reducer pattern and do not deviate from it
+            48. Default pagination should always be added to the component whenever tables are used. Default limit will be 10 and 1st page selected, pattern of implementation will be same as given in examples
+            49. Pagination state variable and its management should be done using useState() from react, so import useState at the beginning of the component
+            50. For redux state managed components, `className` will always be a prop in the component and <div className={className}> will wrap around the entire content
             ## END instructions for generating component code ##
         """
     }
@@ -1927,11 +2814,7 @@ element_samples = [
                     rowKey={first_field_of_entity | unique key of entity}
                     rowSelection={null}
                     identifier="customFieldsList"
-                    offset_limit={{
-                      limit: 10, // user can override this from prompt
-                      pageNumber: 0,
-                      order: "DESC"
-                    }}
+                    pagination={pagination}
                     scroll={{ 
                       y: 500 
                     }}
@@ -1947,24 +2830,46 @@ element_samples = [
             </CapSpin>
             For rendering rows and columns, define following functions in the component to be used in the table
             ## BEGIN pseudocode for table config rows and columns generation ##
+            ## define pagination on the state inside the component function
+            const [pagination, setPagination] = useState({ 
+              pageSize: 10, // based on user input, limit of records per page
+              current: 1, // based on user input, page selected by default
+              onChange: (current, pageSize) => setPagination({ current, pageSize }),
+            });
             ## generate columns for table and rows for data source ##
-            const convertToTitleCase = (str) => {
-                const result = str.replace('_', ' ').replace(/([A-Z])/g, " $1");
-                return result.charAt(0).toUpperCase() + result.slice(1);
-            };
+            const handleActionsMenuClick = e => {
+                e.stopPropagation();
+            }
             const getCustomFieldsTableColumns = () => {
                 const columns = [
-                  { dataIndex: 'name', key: 'name_0', title: <CapHeading type="h5">Name</CapHeading> },
-                  { dataIndex: 'type', key: 'type_1', title: <CapHeading type="h5">Field Type</CapHeading> },
-                  { dataIndex: 'label', key: 'label_2', title: <CapHeading type="h5">Label</CapHeading> },
-                  { dataIndex: 'dataType', key: 'dataType_3', title: <CapHeading type="h5">Data Type</CapHeading> },
-                  { dataIndex: 'isMandatory', key: 'isMandatory_4', title: <CapHeading type="h5">Is Mandatory</CapHeading> },
-                  { dataIndex: 'isPrimary', key: 'isPrimary_5', title: <CapHeading type="h5">Is Primary</CapHeading> }
+                    { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                    { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                    { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                    { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                    { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                    { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                    // add the action column only when requested
+                    {
+                        dataIndex: 'actions',
+                        key: '',
+                        title: <CapHeading type="h5">Actions</CapHeading>,
+                        render: (text, record) => (
+                            <CapDropdown
+                                overlay={(
+                                    <CapMenu onClick={handleActionsMenuClick}>
+                                        <CapMenu.Item key="delete" onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
+                                    </CapMenu>
+                                )}
+                            >
+                                <CapIcon type="more" aria-label="Action menu icon" />
+                            </CapDropdown>
+                        ),
+                    },
                 ];
-                const columnWidth = `${Math.floor(100 / columns.length)}%`;
-                return columns.map(col => ({
-                  ...col,
-                  width: columnWidth,
+                const columnWidth = `${Math.floor(100/columns.length)}%`;
+                return columns.map(column => ({
+                    ...column,
+                    width: columnWidth,
                 }));
             };
             const getCustomFieldsDataSource = () => { /* return customFields list JSON data from state variable */ };

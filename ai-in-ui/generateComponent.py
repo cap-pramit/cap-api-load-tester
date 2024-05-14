@@ -25,7 +25,15 @@ gpt_options = {
     "35turbo16k": {
         "model": "gpt-3.5-turbo-16k",
         "tokens": 16385
-    }
+    },
+    "custom1": {
+        "model": "ft:gpt-3.5-turbo-0125:capillarytech:cap-ai-ui:9OjB8Ic7",
+        "tokens": 4096
+    },
+    "codex": {
+        "model": "davinci-002",
+        "tokens": 16385
+    },
 }
 
 def initialize_openai(api_key):
@@ -79,7 +87,9 @@ async def asyncio_to_thread(func, /, *args, **kwargs):
 
 async def generate_model_response(final_context, user_prompt = None):
     try:
-        gpt = gpt_options['35turbo125']
+        # gpt = gpt_options['35turbo125']
+        # gpt = gpt_options['custom1']
+        gpt = gpt_options['codex']
         messages = final_context
         if user_prompt is not None:
             messages.append(user_prompt)
@@ -98,7 +108,7 @@ async def generate_model_response(final_context, user_prompt = None):
         return model_response['content']
     except Exception as e:
         print(f"Error generating response from gpt: {str(e)}")
-        return None
+        raise e
 
 async def instructions_training(file_path):
     try:
@@ -154,6 +164,7 @@ async def sample_data_training(file_path):
         print("Sample data training completed.")
     except Exception as e:
         print(f"Error during sample data training: {e}")
+        raise e
 
 async def fetch_initial_chat_history(file_path):
     try:
@@ -262,13 +273,6 @@ async def generate_component_2(prompt_file):
         user_prompt = {
             "role": "user",
             "content": prompt,
-        }
-        follow_up_prompt = {
-            "role": "user",
-            "content": """
-                Write the entire component for me, and give me just the component so that I can use it in my react project directly, do not skip any of the
-                fields from the given entity schema. Remove unused methods from the component and keep only things that are required.
-            """,
         }
         print(f"Generating response from gpt...")
         model_response = await generate_model_response(final_context, user_prompt)

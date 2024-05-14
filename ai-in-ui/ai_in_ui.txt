@@ -66,6 +66,7 @@ You are a an accomplished senior react UI web application developer, who works f
             44. Redux state managed components will always have `mapStateToProps` and `mapDispatchToProps`, but simple components will not have it
             45. Redux state managed components reading data from API through redux state, should import { data, fetching } from prop variable, fetching is a boolean variable to control CapSpin spinner when API is loading, data will be used to render the data on UI as read only
             46. For actions column, use CapDropdown and CapMenu combination as per example, on both CapMenu and CapDropdown add a onClick handler to stop event propagation so that action item click does not trigger a row click action on the table
+            47. For redux state managed components, always strictly adhere to the reducer pattern and do not deviate from it
             ## END instructions for generating component code ##
         
 
@@ -303,6 +304,7 @@ You are a an accomplished senior react UI web application developer, who works f
 
 
             For Api call to be made from saga.js, you need to create an entry like this in api.js 
+            `intouch` should be added between vulcan endpoint and actual endpoint from schema to make sure call goes to Intouch API via vulcan
             ## BEGIN entry in app/services/api.js ##
             export const fetchCustomFields = async (data) => {
               const url = `${endpoints.vulcan_endpoint}/intouch/v2/customFields`; // pattern - `${endpoints.vulcan_endpoint}/intouch/${schema.action.api}` mandatory to attach endpoints.vulcan_endpoint to the API endpoint given for a valid call from UI
@@ -361,10 +363,6 @@ You are a an accomplished senior react UI web application developer, who works f
             /* reducer.js */
             import { fromJS } from 'immutable';
             import { actionTypes } from './constants';
-            import * as constants from '../App/constants';
-            
-            // import success/failure marker constants
-            const { REQUEST, SUCCESS, FAILURE, INITIAL } = constants;
             
             const initialState = fromJS({
               // define entity details here with initial values for redux state
@@ -495,4 +493,35 @@ You are a an accomplished senior react UI web application developer, who works f
             import LoadableComponent from './Loadable';
             export default withCustomAuthAndTranslations(LoadableComponent);
             ## END Component index file sheet example ##
+        
+
+
+
+            ## BEGIN entry in pages/App/routes.js file for newly generated component page ##
+            /* routes.js */
+            import { lazy } from 'react';
+            const CustomFields = lazy(() => import('../CustomFields/Loadable')); // imported Loadable of component for effective code-splitting
+            
+            const routes = [
+              // this will be your New route for generated component
+              {
+                path: `/custom-fields`,
+                component: CustomFields,
+              },
+              // this will be your Access forbidden page
+              {
+                exact: true,
+                path: `/accessForbidden`,
+                component: lazy(() => import('@capillarytech/vulcan-react-sdk/components/AccessForbidden')),
+              },
+              // this will be your default / home / landing page route
+              {
+                exact: true,
+                path: `/*`,
+                component: Dashboard,
+              }
+            ];
+            
+            export default routes;
+            ## END entry in pages/App/routes.js file for newly generated component page ##
         

@@ -45,22 +45,12 @@ async def provide_context_to_gpt():
                 system_context = \
                     f"{system_context}\n\n\n" \
                     f"{part['content']}"
-        # print(f"Generating response from gpt...")
-        # model_response = await generate_model_response(initial_context)
-        # print(f"Response received!")
-        write_file('ai_in_ui.txt', system_context)
         return [{
             "role": "system",
             "content": system_context,
         }]
     except Exception as e:
         print(f"Error during generating component: {str(e)}")
-
-# async def complete_initial_training():
-#     tasks = [
-#         asyncio.create_task(provide_context_to_gpt())
-#     ]
-#     return await asyncio.gather(*tasks)
 
 @app.post('/generate-component')
 async def send_prompt(request: PromptRequest):
@@ -72,14 +62,14 @@ async def send_prompt(request: PromptRequest):
             "role": "user",
             "content": prompt,
         }
-        temp_context = await provide_context_to_gpt() + chat_history
+        temp_context = await provide_context_to_gpt()
         prev_chat = []
         try:
             prev_chat = chat_summary[sessionId]
             temp_context += prev_chat
         except KeyError as ke:
             print(ke)
-            # temp_context +=s chat_history
+            temp_context += chat_history
         model_response = await generate_model_response(temp_context, user_prompt)
         print(model_response)
         chat_summary[sessionId] = prev_chat + [
@@ -98,15 +88,18 @@ async def send_prompt(request: PromptRequest):
             }
         })
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail={
+            "code": 500,
+            "success": False,
+            "response": {
+                "sessionId": sessionId,
+                "prompt": str(e),
+            }
+        })
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FastAPI service for OpenAI chat completion")
-    # parser.add_argument("--directory_path", type=str, help="Path to the directory containing context files", required=True)
-
     args = parser.parse_args()
-
     initialize_openai(os.getenv('OPEN_AI_API_KEY'))
-
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9876)
