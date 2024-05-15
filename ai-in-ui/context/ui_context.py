@@ -1764,6 +1764,377 @@ training_data = [
             );
         """
     },
+    {
+        "role": "user",
+        "content": """
+            Create a redux state managed react component to list all the organization\'s custom fields in a tabular format. 
+            Refer to the below custom field entity schema:
+            {"entity":{"name":{"type":"string","defaultValue":""},"type":{"type":"string","defaultValue":""},"dataType":{"type":"enum","defaultValue":"","uiType":"dropdown","possibleValues":["boolean","integer","string","enum"]},"label":{"type":"string","defaultValue":""},"scope":{"type":"string","defaultValue":""},"defaultValue":{"type":"string","defaultValue":""},"phase":{"type":"string","defaultValue":""},"isDisabled":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isUpdatable":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPiiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPsiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"}},"action":{"api":"/v2/organization/customFields","method":"GET"}}'}
+        """
+    },
+    {
+        "role": "assistant",
+        "content": """
+            Sure, let's create a Redux state-managed React component to list all the organization's custom fields in a tabular format. 
+            We'll follow the instructions and examples provided to ensure we adhere to the required standards.
+
+            I will create the file contents in the following order:
+            1. api.js
+            2. constants.js
+            3. actions.js
+            4. reducer.js
+            5. selectors.js
+            6. saga.js
+            7. style.js
+            8. Component file
+            9. Loadable.js
+            10. index.js
+            11. routes.js
+            12. mfe-exposed-components.js
+
+            ### Step 1: Create the API call in `api.js`
+            ```javascript
+            // api.js
+            import { apiCaller } from '@capillarytech/vulcan-react-sdk/utils';
+            import endpoints from '../config/endpoints';
+            import * as requestConstructor from './requestConstructor';
+
+            const { getVulcanAPICallObject } = requestConstructor;
+
+            function redirectIfUnauthenticated(response) {
+              const { removeAuthenticationDetais } = require('../utils/authWrapper');
+              const isUnauthorized = response.status === 401;
+              const isLoginPage = window.location.pathname.indexOf('/login') !== -1;
+              const isAuthUserCall =
+                response.url.split('auth')[1] &&
+                response.url.split('auth')[1].split('?')[0] === '/user';
+              if (isUnauthorized) {
+                if (isLoginPage && isAuthUserCall) return;
+                removeAuthenticationDetais();
+              }
+            }
+
+            const httpRequest = apiCaller.initializeApiCaller({redirectIfUnauthenticated});
+
+            export const fetchCustomFields = async (payload = {}) => {
+              // extract data from payload like const { name } = payload; and append it to the API URL
+              const url = `${endpoints.vulcan_endpoint}/v2/organization/customFields`;
+              return httpRequest(url, getVulcanAPICallObject('GET'));
+            };
+            ```
+
+            ### Step 2: Define constants in `constants.js`
+            ```javascript
+            // constants.js
+            import { defineActionTypes } from '@capillarytech/vulcan-react-sdk/utils';
+
+            const scope = "/Components/pages/CustomFieldsList/";
+
+            export const actionTypes = defineActionTypes(
+              {
+                CLEAR_DATA: "CLEAR_DATA",
+                FETCH_CUSTOM_FIELDS: "FETCH_CUSTOM_FIELDS",
+                FETCH_CUSTOM_FIELDS_SUCCESS: "FETCH_CUSTOM_FIELDS_SUCCESS",
+                FETCH_CUSTOM_FIELDS_FAILURE: "FETCH_CUSTOM_FIELDS_FAILURE",
+              },
+              { prefix: CURRENT_APP_NAME, scope: scope },
+            );
+            ```
+
+            ### Step 3: Create actions in `actions.js`
+            ```javascript
+            // actions.js
+            import { actionTypes } from './constants';
+
+            export const clearData = () => ({
+              type: actionTypes.CLEAR_DATA,
+            });
+
+            export const fetchCustomFields = (payload) => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS,
+              payload,
+            });
+
+            export const fetchCustomFieldsSuccess = data => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS_SUCCESS,
+              data: data,
+            });
+
+            export const fetchCustomFieldsFailure = error => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS_FAILURE,
+              error: error,
+            });
+            ```
+
+            ### Step 4: Create the reducer in `reducer.js`
+            ```javascript
+            // reducer.js
+            import { fromJS } from 'immutable';
+            import { actionTypes } from './constants';
+
+            const initialState = fromJS({
+              customFields: {
+                fetching: false,
+                data: [],
+                error: null,
+              },
+            });
+
+            const customFieldsReducer = (state = initialState, action) => {
+              switch (action.type) {
+                case actionTypes.CLEAR_DATA:
+                  return state.set('customFields', initialState);
+                case actionTypes.FETCH_CUSTOM_FIELDS:
+                  return state.set('customFields', fromJS({ fetching: true, data: [], error: null }));
+                case actionTypes.FETCH_CUSTOM_FIELDS_SUCCESS:
+                  return state.set('customFields', fromJS({ fetching: false, data: action.data, error: null }));
+                case actionTypes.FETCH_CUSTOM_FIELDS_FAILURE:
+                  return state.set('customFields', fromJS({ fetching: false, data: [], error: action.error }));
+                default:
+                  return state;
+              }
+            };
+
+            export default customFieldsReducer;
+            ```
+
+            ### Step 5: Create selectors in `selectors.js`
+            ```javascript
+            // selectors.js
+            import { createSelector } from 'reselect';
+            import { fromJS } from 'immutable';
+            import { initialState } from './reducer';
+
+            const selectDomain = (state = fromJS({})) =>
+              state.get(`${CURRENT_APP_NAME}_customFieldsListReducer`, initialState);
+
+            const makeSelectCustomFields = () =>
+              createSelector(selectDomain, (substate = fromJS({})) =>
+                substate.toJS().customFields,
+            );
+
+            export {
+              makeSelectCustomFields,
+            };
+            ```
+
+            ### Step 6: Create the saga in `saga.js`
+            ```javascript
+            // saga.js
+            import { call, put, takeLatest, all } from 'redux-saga/effects';
+            import { actionTypes } from './constants';
+            import * as actions from './actions';
+            import * as Api from '../../../services/api';
+
+            function* fetchCustomFields({ payload }) {
+              try {
+                const response = yield call(Api.fetchCustomFields, payload);
+                yield put(actions.fetchCustomFieldsSuccess(response));
+              } catch (error) {
+                yield put(actions.fetchCustomFieldsFailure(error));
+              }
+            }
+
+            function* watchFetchCustomFields() {
+              yield takeLatest(actionTypes.FETCH_CUSTOM_FIELDS, fetchCustomFields);
+            }
+
+            export default function* customFieldsSaga() {
+              yield all([
+                watchFetchCustomFields(),
+              ]);
+            }
+            ```
+
+            ### Step 7: Create the style in `style.js`
+            ```javascript
+            // style.js
+            import { css } from 'styled-components';
+
+            export default css`
+              .custom-fields-list-table {
+                width: 100%;
+              }
+            `;
+            ```
+
+            ### Step 8: Create the main component file
+            ```javascript
+            // CustomFieldsList.js
+            import React, { useEffect, useState } from 'react';
+            import { compose, bindActionCreators } from 'redux';
+            import { injectIntl, intlShape } from 'react-intl';
+            import PropTypes from 'prop-types';
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux';
+            import { CapTable, CapSpin, CapHeading, CapRow, CapColumn } from '@capillarytech/cap-ui-library';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import style from './style';
+            import * as actions from './actions';
+            import * as constants from './constants';
+            import saga from './saga';
+            import reducer from './reducer';
+            import { makeSelectCustomFields } from './selectors';
+            import PageTemplate from '../../templates/PageTemplate';
+
+            const CustomFieldsList = ({ className, customFields, actions, intl }) => {
+              const { data, fetching } = customFields;
+              const [pagination, setPagination] = useState({
+                current: 1,
+                pageSize: 10,
+                onChange: (current, pageSize) => setPagination({ current, pageSize }),
+              });
+
+              useEffect(() => {
+                actions.fetchCustomFields();
+              }, []);
+
+              const getCustomFieldsTableColumns = () => {
+                const columns = [
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'phase', key: 'phase', title: <CapHeading type="h5">Phase</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
+                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                ];
+                const columnWidth = `${Math.floor(100 / columns.length)}%`;
+                return columns.map(column => ({
+                  ...column,
+                  width: columnWidth,
+                }));
+              };
+
+              return (
+                <div className={className}>
+                  <PageTemplate>
+                    <CapRow>
+                      <CapColumn span={24}>
+                        <CapHeading type="h2">Organization's Custom Fields</CapHeading>
+                      </CapColumn>
+                    </CapRow>
+                    <CapRow>
+                      <CapColumn span={24}>
+                        <CapSpin spinning={fetching}>
+                          <CapTable
+                            className="custom-fields-list-table"
+                            columns={getCustomFieldsTableColumns()}
+                            dataSource={data}
+                            rowKey="id"
+                            rowSelection={null}
+                            identifier="customFieldsList"
+                            pagination={pagination}
+                            scroll={{ y: 500 }}
+                            infinteScroll={false}
+                            showLoader={false}
+                            rowClassName="row-class-name"
+                          />
+                        </CapSpin>
+                      </CapColumn>
+                    </CapRow>
+                  </PageTemplate>
+                </div>
+              );
+            };
+
+            CustomFieldsList.propTypes = {
+              customFields: PropTypes.object.isRequired,
+              actions: PropTypes.object.isRequired,
+              intl: intlShape.isRequired,
+            };
+
+            const mapStateToProps = createStructuredSelector({
+              customFields: makeSelectCustomFields(),
+            });
+
+            function mapDispatchToProps(dispatch) {
+              return {
+                actions: bindActionCreators(actions, dispatch),
+              };
+            }
+
+            const withConnect = connect(
+              mapStateToProps,
+              mapDispatchToProps,
+            );
+
+            const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
+            const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
+
+            export default compose(
+              withSaga,
+              withReducer,
+              withConnect,
+            )(
+              injectIntl(withStyles(clearDataOnUnmount(CustomFieldsList, "clearData"), style))
+            );
+            ```
+
+            ### Step 9: Create Loadable.js
+            ```javascript
+            // Loadable.js
+            import React, { Suspense } from 'react';
+            import { loadable } from '@capillarytech/cap-ui-utils';
+            import CapSpin from '@capillarytech/cap-ui-library/CapSpin';
+
+            const LoadableComponent = loadable(() => import('./CustomFieldsList'));
+
+            export default () => (
+              <Suspense fallback={<CapSpin />}>
+                <LoadableComponent />
+              </Suspense>
+            );
+            ```
+
+            ### Step 10: Create index.js
+            ```javascript
+            // index.js
+            import { withCustomAuthAndTranslations } from '@capillarytech/vulcan-react-sdk/utils';
+            import LoadableComponent from './Loadable';
+
+            export default withCustomAuthAndTranslations(LoadableComponent);
+            ```
+
+            ### Step 11: Add entry in routes.js
+            ```javascript
+            // routes.js
+            import { lazy } from 'react';
+            const CustomFields = lazy(() => import('../CustomFields/Loadable'));
+
+            const routes = [
+              {
+                path: `/custom-fields`,
+                component: CustomFields,
+              },
+              {
+                exact: true,
+                path: `/accessForbidden`,
+                component: lazy(() => import('@capillarytech/vulcan-react-sdk/components/AccessForbidden')),
+              },
+              {
+                exact: true,
+                path: `/*`,
+                component: Dashboard,
+              }
+            ];
+
+            export default routes;
+            ```
+
+            ### Step 12: Add entry in mfe-exposed-components.js
+            ```javascript
+            // mfe-exposed-components.js
+            module.exports = {
+              './CustomFieldsList': './app/components/pages/CustomFields',
+            };
+            ```
+        """
+    }
 ]
 
 chat_history = [
@@ -2120,69 +2491,228 @@ chat_history = [
     {
         "role": "user",
         "content": """
-            Create a redux state managed react component to list all the organization's custom fields in a tabular format. 
-            Also, add edit and delete actions for the rows of the table with dummy functions to be implemented. 
+            Create a redux state managed react component to list all the organization\'s custom fields in a tabular format. 
             Refer to the below custom field entity schema:
-            {\"entity\":{\"name\":{\"type\":\"string\",\"defaultValue\":\"\"},\"type\":{\"type\":\"string\",\"defaultValue\":\"\"},\"dataType\":{\"type\":\"enum\",\"defaultValue\":\"\",\"uiType\":\"dropdown\",\"possibleValues\":[\"boolean\",\"integer\",\"string\",\"enum\"]},\"label\":{\"type\":\"string\",\"defaultValue\":\"\"},\"scope\":{\"type\":\"string\",\"defaultValue\":\"\"},\"defaultValue\":{\"type\":\"string\",\"defaultValue\":\"\"},\"isDisabled\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"},\"isUpdatable\":{\"type\":\"boolean\",\"defaultValue\":false,\"uiType\":\"checkbox\"}},\"action\":{\"api\":\"/v2/organization/customFields\",\"method\":\"GET\"}}
+            {"entity":{"name":{"type":"string","defaultValue":""},"type":{"type":"string","defaultValue":""},"dataType":{"type":"enum","defaultValue":"","uiType":"dropdown","possibleValues":["boolean","integer","string","enum"]},"label":{"type":"string","defaultValue":""},"scope":{"type":"string","defaultValue":""},"defaultValue":{"type":"string","defaultValue":""},"phase":{"type":"string","defaultValue":""},"isDisabled":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isUpdatable":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPiiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPsiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"}},"action":{"api":"/v2/organization/customFields","method":"GET"}}'}
         """
     },
     {
         "role": "assistant",
         "content": """
+            Sure, let's create a Redux state-managed React component to list all the organization's custom fields in a tabular format. 
+            We'll follow the instructions and examples provided to ensure we adhere to the required standards.
+            
+            I will create the file contents in the following order:
+            1. api.js
+            2. constants.js
+            3. actions.js
+            4. reducer.js
+            5. selectors.js
+            6. saga.js
+            7. style.js
+            8. Component file
+            9. Loadable.js
+            10. index.js
+            11. routes.js
+            12. mfe-exposed-components.js
+
+            ### Step 1: Create the API call in `api.js`
+            ```javascript
+            // api.js
+            import { apiCaller } from '@capillarytech/vulcan-react-sdk/utils';
+            import endpoints from '../config/endpoints';
+            import * as requestConstructor from './requestConstructor';
+            
+            const { getVulcanAPICallObject } = requestConstructor;
+            
+            function redirectIfUnauthenticated(response) {
+              const { removeAuthenticationDetais } = require('../utils/authWrapper');
+              const isUnauthorized = response.status === 401;
+              const isLoginPage = window.location.pathname.indexOf('/login') !== -1;
+              const isAuthUserCall =
+                response.url.split('auth')[1] &&
+                response.url.split('auth')[1].split('?')[0] === '/user';
+              if (isUnauthorized) {
+                if (isLoginPage && isAuthUserCall) return;
+                removeAuthenticationDetais();
+              }
+            }
+            
+            const httpRequest = apiCaller.initializeApiCaller({redirectIfUnauthenticated});
+            
+            export const fetchCustomFields = async (payload = {}) => {
+              // extract data from payload like const { name } = payload; and append it to the API URL
+              const url = `${endpoints.vulcan_endpoint}/v2/organization/customFields`;
+              return httpRequest(url, getVulcanAPICallObject('GET'));
+            };
+            ```
+            
+            ### Step 2: Define constants in `constants.js`
+            ```javascript
+            // constants.js
+            import { defineActionTypes } from '@capillarytech/vulcan-react-sdk/utils';
+            
+            const scope = "/Components/pages/CustomFieldsList/";
+            
+            export const actionTypes = defineActionTypes(
+              {
+                CLEAR_DATA: "CLEAR_DATA",
+                FETCH_CUSTOM_FIELDS: "FETCH_CUSTOM_FIELDS",
+                FETCH_CUSTOM_FIELDS_SUCCESS: "FETCH_CUSTOM_FIELDS_SUCCESS",
+                FETCH_CUSTOM_FIELDS_FAILURE: "FETCH_CUSTOM_FIELDS_FAILURE",
+              },
+              { prefix: CURRENT_APP_NAME, scope: scope },
+            );
+            ```
+            
+            ### Step 3: Create actions in `actions.js`
+            ```javascript
+            // actions.js
+            import { actionTypes } from './constants';
+            
+            export const clearData = () => ({
+              type: actionTypes.CLEAR_DATA,
+            });
+            
+            export const fetchCustomFields = (payload) => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS,
+              payload,
+            });
+            
+            export const fetchCustomFieldsSuccess = data => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS_SUCCESS,
+              data: data,
+            });
+            
+            export const fetchCustomFieldsFailure = error => ({
+              type: actionTypes.FETCH_CUSTOM_FIELDS_FAILURE,
+              error: error,
+            });
+            ```
+            
+            ### Step 4: Create the reducer in `reducer.js`
+            ```javascript
+            // reducer.js
+            import { fromJS } from 'immutable';
+            import { actionTypes } from './constants';
+            
+            const initialState = fromJS({
+              customFields: {
+                fetching: false,
+                data: [],
+                error: null,
+              },
+            });
+            
+            const customFieldsReducer = (state = initialState, action) => {
+              switch (action.type) {
+                case actionTypes.CLEAR_DATA:
+                  return state.set('customFields', initialState);
+                case actionTypes.FETCH_CUSTOM_FIELDS:
+                  return state.set('customFields', fromJS({ fetching: true, data: [], error: null }));
+                case actionTypes.FETCH_CUSTOM_FIELDS_SUCCESS:
+                  return state.set('customFields', fromJS({ fetching: false, data: action.data, error: null }));
+                case actionTypes.FETCH_CUSTOM_FIELDS_FAILURE:
+                  return state.set('customFields', fromJS({ fetching: false, data: [], error: action.error }));
+                default:
+                  return state;
+              }
+            };
+            
+            export default customFieldsReducer;
+            ```
+            
+            ### Step 5: Create selectors in `selectors.js`
+            ```javascript
+            // selectors.js
+            import { createSelector } from 'reselect';
+            import { fromJS } from 'immutable';
+            import { initialState } from './reducer';
+            
+            const selectDomain = (state = fromJS({})) =>
+              state.get(`${CURRENT_APP_NAME}_customFieldsListReducer`, initialState);
+            
+            const makeSelectCustomFields = () =>
+              createSelector(selectDomain, (substate = fromJS({})) =>
+                substate.toJS().customFields,
+            );
+            
+            export {
+              makeSelectCustomFields,
+            };
+            ```
+            
+            ### Step 6: Create the saga in `saga.js`
+            ```javascript
+            // saga.js
+            import { call, put, takeLatest, all } from 'redux-saga/effects';
+            import { actionTypes } from './constants';
+            import * as actions from './actions';
+            import * as Api from '../../../services/api';
+            
+            function* fetchCustomFields({ payload }) {
+              try {
+                const response = yield call(Api.fetchCustomFields, payload);
+                yield put(actions.fetchCustomFieldsSuccess(response));
+              } catch (error) {
+                yield put(actions.fetchCustomFieldsFailure(error));
+              }
+            }
+            
+            function* watchFetchCustomFields() {
+              yield takeLatest(actionTypes.FETCH_CUSTOM_FIELDS, fetchCustomFields);
+            }
+            
+            export default function* customFieldsSaga() {
+              yield all([
+                watchFetchCustomFields(),
+              ]);
+            }
+            ```
+            
+            ### Step 7: Create the style in `style.js`
+            ```javascript
+            // style.js
+            import { css } from 'styled-components';
+            
+            export default css`
+              .custom-fields-list-table {
+                width: 100%;
+              }
+            `;
+            ```
+            
+            ### Step 8: Create the main component file
+            ```javascript
+            // CustomFieldsList.js
             import React, { useEffect, useState } from 'react';
             import { compose, bindActionCreators } from 'redux';
-            import { connect } from 'react-redux';
-            import { createStructuredSelector } from 'reselect';
             import { injectIntl, intlShape } from 'react-intl';
-            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
-            import { CapTable, CapRow, CapColumn, CapHeading, CapSpin, CapMenu, CapIcon, CapDropdown } from '@capillarytech/cap-ui-library';
             import PropTypes from 'prop-types';
+            import { createStructuredSelector } from 'reselect';
+            import { connect } from 'react-redux';
+            import { CapTable, CapSpin, CapHeading, CapRow, CapColumn } from '@capillarytech/cap-ui-library';
+            import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
+            import style from './style';
             import * as actions from './actions';
             import * as constants from './constants';
             import saga from './saga';
             import reducer from './reducer';
             import { makeSelectCustomFields } from './selectors';
             import PageTemplate from '../../templates/PageTemplate';
-            import style from './style';
-
-            const CustomFieldsTable = ({ className, customFieldsData, actions }) => {
-
-              // extract data and fetching boolean flag from props data in redux
-              const { data, fetching } = customFieldsData;
-
-              // define pagination state variable for table type components
-              const [pagination, setPagination] = useState({ 
-                  pageSize: 10, // based on user input, limit of records per page
-                  current: 1, // based on user input, page selected by default
-                  onChange: (current, pageSize) => setPagination({ current, pageSize }),
+            
+            const CustomFieldsList = ({ className, customFields, actions, intl }) => {
+              const { data, fetching } = customFields;
+              const [pagination, setPagination] = useState({
+                current: 1,
+                pageSize: 10,
+                onChange: (current, pageSize) => setPagination({ current, pageSize }),
               });
-
-              // call action to load custom fields on component mount
+            
               useEffect(() => {
                 actions.fetchCustomFields();
               }, []);
-
-              // stop event propagation on menu click
-              const handleActionsMenuClick = e => {
-                e.domEvent.stopPropagation();
-              };
-                
-              // stop event propagation on dropdown click
-              const handleActionsMenuDropdownClick = e => {
-                e.stopPropagation();
-              };
-
-              // implement edit record
-              const handleEdit = record => {
-                console.log('Edit record:', record);
-              };
-
-              // implement delete record
-              const handleDelete = record => {
-                console.log('Delete record:', record);
-              };
-
-              // prepare all columns for table
+            
               const getCustomFieldsTableColumns = () => {
                 const columns = [
                   { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
@@ -2191,111 +2721,144 @@ chat_history = [
                   { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
                   { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
                   { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
+                  { dataIndex: 'phase', key: 'phase', title: <CapHeading type="h5">Phase</CapHeading> },
                   { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
                   { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
-                  // add this action column only if actions column is needed
-                  {
-                      dataIndex: '',
-                      key: 'actions',
-                      title: '',
-                      align: 'center',
-                      render: (text, record) => (
-                        <CapRow>
-                          <CapDropdown onClick={handleActionsMenuDropdownClick} overlay={(
-                            <CapMenu onClick={handleActionsMenuClick}>
-                              <CapMenu.Item onClick={() => handleEdit(record)}>Edit</CapMenu.Item>
-                              <CapMenu.Item onClick={() => handleDelete(record)}>Delete</CapMenu.Item>
-                            </CapMenu>
-                          )}>
-                            <CapIcon type="more" aria-label="Action menu icon" />
-                          </CapDropdown>
-                        </CapRow>
-                      )
-                    },
+                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
+                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
                 ];
-                // get column width
                 const columnWidth = `${Math.floor(100 / columns.length)}%`;
-                // append column width and send back columns list for table
-                const finalColumns = columns.map(col => ({
-                  ...col,
+                return columns.map(column => ({
+                  ...column,
                   width: columnWidth,
                 }));
-                return finalColumns;
               };
-
+            
               return (
-                  <div className={className}>
-                    <PageTemplate>
-                      <CapRow>
-                        <CapColumn span={24}>
-                          <CapHeading type="h2">Custom Fields</CapHeading>
-                        </CapColumn>
-                        <CapColumn span={24}>
-                          <CapSpin spinning={fetching}>
-                            <CapTable
-                              className="custom-fields-table"
-                              columns={getCustomFieldsTableColumns()}
-                              dataSource={data}
-                              rowKey="id"
-                              rowSelection={null}
-                              identifier="customFieldsTable"
-                              pagination={pagination}
-                              scroll={{ y: 500 }}
-                              infinteScroll={false}
-                              showLoader={false}
-                              rowClassName="custom-fields-row"
-                              onRow={record => {
-                                return {
-                                  onClick: event => {
-                                    /* handle row click */
-                                  },
-                                };
-                              }}
-                            />
-                          </CapSpin>
-                        </CapColumn>
-                      </CapRow>
-                    </PageTemplate>
-                  </div>
+                <div className={className}>
+                  <PageTemplate>
+                    <CapRow>
+                      <CapColumn span={24}>
+                        <CapHeading type="h2">Organization's Custom Fields</CapHeading>
+                      </CapColumn>
+                    </CapRow>
+                    <CapRow>
+                      <CapColumn span={24}>
+                        <CapSpin spinning={fetching}>
+                          <CapTable
+                            className="custom-fields-list-table"
+                            columns={getCustomFieldsTableColumns()}
+                            dataSource={data}
+                            rowKey="id"
+                            rowSelection={null}
+                            identifier="customFieldsList"
+                            pagination={pagination}
+                            scroll={{ y: 500 }}
+                            infinteScroll={false}
+                            showLoader={false}
+                            rowClassName="row-class-name"
+                          />
+                        </CapSpin>
+                      </CapColumn>
+                    </CapRow>
+                  </PageTemplate>
+                </div>
               );
             };
-
-            // define prop types of component
-            CustomFieldsTable.propTypes = {
-              customFieldsData: PropTypes.object.isRequired,
+            
+            CustomFieldsList.propTypes = {
+              customFields: PropTypes.object.isRequired,
               actions: PropTypes.object.isRequired,
               intl: intlShape.isRequired,
             };
-
-            // map redux state to props of component using selector methods
+            
             const mapStateToProps = createStructuredSelector({
-              customFieldsData: makeSelectCustomFields(),
+              customFields: makeSelectCustomFields(),
             });
-
-            // map actions to props of component
+            
             function mapDispatchToProps(dispatch) {
               return {
                 actions: bindActionCreators(actions, dispatch),
               };
             }
-
-            // declare with connect for state and actions props
-            const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-            // inject saga and reducer with unique key using CURRENT_APP_NAME
+            
+            const withConnect = connect(
+              mapStateToProps,
+              mapDispatchToProps,
+            );
+            
             const withSaga = injectSaga({ key: `${CURRENT_APP_NAME}_customFieldsListSaga`, saga, mode: sagaInjectorTypes.DAEMON });
             const withReducer = injectReducer({ key: `${CURRENT_APP_NAME}_customFieldsListReducer`, reducer });
-
-            // export component
+            
             export default compose(
               withSaga,
               withReducer,
               withConnect,
             )(
-                injectIntl(withStyles(clearDataOnUnmount(CustomFieldsTable, "clearData"), style))
+              injectIntl(withStyles(clearDataOnUnmount(CustomFieldsList, "clearData"), style))
             );
+            ```
+            
+            ### Step 9: Create Loadable.js
+            ```javascript
+            // Loadable.js
+            import React, { Suspense } from 'react';
+            import { loadable } from '@capillarytech/cap-ui-utils';
+            import CapSpin from '@capillarytech/cap-ui-library/CapSpin';
+            
+            const LoadableComponent = loadable(() => import('./CustomFieldsList'));
+            
+            export default () => (
+              <Suspense fallback={<CapSpin />}>
+                <LoadableComponent />
+              </Suspense>
+            );
+            ```
+            
+            ### Step 10: Create index.js
+            ```javascript
+            // index.js
+            import { withCustomAuthAndTranslations } from '@capillarytech/vulcan-react-sdk/utils';
+            import LoadableComponent from './Loadable';
+            
+            export default withCustomAuthAndTranslations(LoadableComponent);
+            ```
+            
+            ### Step 11: Add entry in routes.js
+            ```javascript
+            // routes.js
+            import { lazy } from 'react';
+            const CustomFields = lazy(() => import('../CustomFields/Loadable'));
+            
+            const routes = [
+              {
+                path: `/custom-fields`,
+                component: CustomFields,
+              },
+              {
+                exact: true,
+                path: `/accessForbidden`,
+                component: lazy(() => import('@capillarytech/vulcan-react-sdk/components/AccessForbidden')),
+              },
+              {
+                exact: true,
+                path: `/*`,
+                component: Dashboard,
+              }
+            ];
+            
+            export default routes;
+            ```
+            
+            ### Step 12: Add entry in mfe-exposed-components.js
+            ```javascript
+            // mfe-exposed-components.js
+            module.exports = {
+              './CustomFieldsList': './app/components/pages/CustomFields',
+            };
+            ```
         """
-    },
+    }
 ]
 
 base_instructions = [
@@ -2378,7 +2941,7 @@ base_instructions = [
             47. For redux state managed components, always strictly adhere to the reducer pattern and do not deviate from it
             48. Default pagination should always be added to the component whenever tables are used. Default limit will be 10 and 1st page selected, pattern of implementation will be same as given in examples
             49. Pagination state variable and its management should be done using useState() from react, so import useState at the beginning of the component
-            50. For redux state managed components, `className` will always be a prop in the component and <div className={className}> will wrap around the entire content
+            50. For redux state managed components only, `className` will always be a prop in the component and <div className={className}> will wrap around the entire content [Not needed for simple components]
             51. Complete the implementation by creating all required files in following order:
                 a. api.js entry (just the API caller method needed, not full implementation) [Not needed for simple components, needed for redux state-managed components only]
                 b. constants.js [Not needed for simple components, needed for redux state-managed components only]
@@ -2391,6 +2954,7 @@ base_instructions = [
                 i. Loadable.js [Needed for both types of components generated]
                 j. index.js [Needed for both types of components generated]
                 k. routes.js entry [Not needed for simple components, needed for redux state-managed components only]
+                l. mfe-exposed-components.js [Needed for both types of components generated]s
             ## END instructions for generating component code ##
         """
     }
@@ -2401,15 +2965,7 @@ component_constructs = [
         "role": "system",
         "content": """
             For Api call to be made from saga.js, you need to create an entry like this in api.js 
-            `intouch` should be added between vulcan endpoint and actual endpoint from schema to make sure call goes to Intouch API via vulcan
-            ## BEGIN entry in app/services/api.js ##
-            export const fetchCustomFields = async (data) => {
-              const url = `${endpoints.vulcan_endpoint}/intouch/v2/customFields`; // pattern - `${endpoints.vulcan_endpoint}/intouch/${schema.action.api}` mandatory to attach endpoints.vulcan_endpoint to the API endpoint given for a valid call from UI
-              return httpRequest(url, getVulcanAPICallObject('GET', data));
-            };
-            ## End entry in app/services/api.js ##
-            
-            ## BEGIN api.js example - FULL FILE if required ##
+            ## BEGIN api.js example - FULL FILE if needed else only provide method to call API ##
             import { apiCaller } from '@capillarytech/vulcan-react-sdk/utils';
             import endpoints from '../config/endpoints';
             import * as requestConstructor from './requestConstructor';
@@ -2428,13 +2984,38 @@ component_constructs = [
                 removeAuthenticationDetais();
               }
             }
-            
             const httpRequest = apiCaller.initializeApiCaller({redirectIfUnauthenticated});
             
+              # pattern - `${endpoints.vulcan_endpoint}/intouch/${schema.action.api}` mandatory to attach endpoints.vulcan_endpoint to the API endpoint given for a valid call from UI
+              # request is POST / PUT / DELETE, body = data
+              # if request method is GET body = undefined
+              # options is an object of below structure
+              # options: {
+              #   type: object,
+              #   defaultvalue: {},
+              #   desc: 'request constructor options',
+              #   fields: {
+              #       isFileUpload: {
+              #           type: boolean,
+              #           defaultvalue: false,
+              #           desc: 'required for file upload cases only' 
+              #       },
+              #       apiConfigs: {
+              #           type: object,
+              #           defaultvalue: {},
+              #           desc: 'required for passing extra headers',
+              #           fields: {
+              #               headers: {
+              #                   type: 'object',
+              #                   defaultvalue: {},
+              #               }
+              #           }
+              #       }  
+              #   }
+              # }
             export const fetchCustomFields = async (data) => {
-              // pattern - `${endpoints.vulcan_endpoint}/intouch/${schema.action.api}` mandatory to attach endpoints.vulcan_endpoint to the API endpoint given for a valid call from UI
               const url = `${endpoints.vulcan_endpoint}/intouch/v2/customFields`;
-              return httpRequest(url, getVulcanAPICallObject('GET', data));
+              return httpRequest(url, getVulcanAPICallObject('GET', body, options));
             };
             ## END api.js example - FULL FILE if required ##
         """
@@ -2450,6 +3031,7 @@ component_constructs = [
             
             export const actionTypes = defineActionTypes(
               {
+                CLEAR_DATA: "CLEAR_DATA",
                 FETCH_CUSTOM_FIELDS: "FETCH_CUSTOM_FIELDS",
                 FETCH_CUSTOM_FIELDS_SUCCESS: "FETCH_CUSTOM_FIELDS_SUCCESS",
                 FETCH_CUSTOM_FIELDS_FAILURE: "FETCH_CUSTOM_FIELDS_FAILURE",
@@ -2466,6 +3048,10 @@ component_constructs = [
             /* actions.js */
 
             import { actionTypes } from './constants';
+            
+            export const clearData = () => ({
+              type: actionTypes.CLEAR_DATA,
+            });
 
             export const fetchCustomFields = (payload) => ({ // call this from the React component to load data / perform action as mentioned in schema
               type: actionTypes.FETCH_CUSTOM_FIELDS,
@@ -2504,6 +3090,8 @@ component_constructs = [
             // name of reducer is camel case name of component + 'Reducer'
             const customFieldsReducer = (state = initialState, action) => {
               switch (action.type) {
+                case actionTypes.CLEAR_DATA:
+                  return state.set('customFields', initialState);
                 case actionTypes.FETCH_CUSTOM_FIELDS:
                   return state.set('customFields', fromJS({ fetching: true, data: [], error: null }));
                 case actionTypes.FETCH_CUSTOM_FIELDS_SUCCESS:
@@ -2558,7 +3146,7 @@ component_constructs = [
             function* fetchCustomFields({ payload }) {
               try {
                 // Call the API to fetch custom fields, getCustomFields is the API function
-                const response = yield call(Api.getCustomFields, payload);
+                const response = yield call(Api.fetchCustomFields, payload);
                 /* Process response here to prepare the data in required format for component into customFields data */
                 // Dispatch success action with custom fields data
                 yield put(actions.fetchCustomFieldsSuccess(customFields));
@@ -2591,6 +3179,7 @@ component_constructs = [
             import { css } from 'styled-components';
             /* sample styles for h3 element and children-routes class used in Component code */
             export default css`
+              /* left align div of type h2 */ 
               div[type="h2"] {
                 text-align: left;
                 margin-bottom: 8px;
@@ -2659,6 +3248,22 @@ component_constructs = [
             
             export default routes;
             ## END entry in pages/App/routes.js file for newly generated component page ##
+        """
+    },
+    {
+        "role": "system",
+        "content": """
+            ## BEGIN entry in mfe-exposed-components file for newly generated component page to expose it with webpack module federation ##
+            /* mfe-exposed-components.js */
+            // This file is used to expose the components of the MFE to the host application
+            // Contents of this file are used in webpack config's ModuleFederationPlugin in consumer app.
+            //
+            module.exports = {
+                // which exposes
+                // List all components that are needed to be exposed from this app, example:
+                './CustomFieldsList': './app/components/pages/CustomFields',
+            };
+            ## END entry in mfe-exposed-components file ##
         """
     }
 ]
@@ -2862,7 +3467,7 @@ element_samples = [
                     identifier="customFieldsList"
                     pagination={pagination}
                     scroll={{ 
-                      y: 500 
+                      y: 500 // height of the table
                     }}
                     infinteScroll={false}
                     showLoader={loading attribute from props}
