@@ -620,7 +620,7 @@ training_data = [
                           scroll={{ y: 500 }}
                           infinteScroll={false}
                           showLoader={false}
-                          rowClassName="row-class-name"
+                          rowClassName="extended-fields-row"
                           // handle row click on the table
                           onRow={record => {
                             return {
@@ -889,7 +889,7 @@ training_data = [
                                     scroll={{ y: 500 }}
                                     infinteScroll={false}
                                     showLoader={false}
-                                    rowClassName="row-class-name"
+                                    rowClassName="extended-fields-row"
                                 />
                             </CapSpin>
                         </CapColumn>
@@ -1148,7 +1148,7 @@ training_data = [
                                 scroll={{ y: 500 }}
                                 infinteScroll={false}
                                 showLoader={!customFields}
-                                rowClassName="row-class-name"
+                                rowClassName="custom-fields-row"
                             />
                         </CapSpin>
                     </PageTemplate>
@@ -2032,7 +2032,7 @@ training_data = [
                             scroll={{ y: 500 }}
                             infinteScroll={false}
                             showLoader={false}
-                            rowClassName="row-class-name"
+                            rowClassName="custom-fields-row"
                           />
                         </CapSpin>
                       </CapColumn>
@@ -2196,7 +2196,7 @@ chat_history = [
                                     scroll={{ y: 500 }}
                                     infinteScroll={false}
                                     showLoader={false}
-                                    rowClassName="row-class-name"
+                                    rowClassName="extended-fields-row"
                                 />
                             </CapSpin>
                         </CapColumn>
@@ -2756,7 +2756,7 @@ chat_history = [
                             scroll={{ y: 500 }}
                             infinteScroll={false}
                             showLoader={false}
-                            rowClassName="row-class-name"
+                            rowClassName="custom-fields-row"
                           />
                         </CapSpin>
                       </CapColumn>
@@ -3476,7 +3476,7 @@ element_samples = [
                       onMouseLeave: (event) => { /* handle Mouse leave event on row */ },
                       onClick: (event) => { /* handle Click event on row */ },
                     })}
-                    rowClassName="row-class-name"
+                    rowClassName="custom-fields-row"
                 />
             </CapSpin>
             For rendering rows and columns, define following functions in the component to be used in the table
