@@ -4,7 +4,7 @@ import os
 class ResponseParser:
     def __init__(self, response_file_name = 'sample_response.txt'):
         self.file_name = response_file_name
-        self.folder_path = os.getcwd()
+        self.folder_path = self.create_tmp_folder()
 
     def write_file(self, file_name, content):
         try:
@@ -16,11 +16,15 @@ class ResponseParser:
             print(f"Error writing content to file: {str(e)}")
             return False
 
-    def create_folder(self, folder_name):
-        # Get the current directory
+    def create_tmp_folder(self):
         current_directory = os.getcwd()
+        folder_path = os.path.join(current_directory, "vulcan_copilot/tmp")
+        os.makedirs(folder_path, exist_ok=True)
+        return folder_path
+
+    def create_component_folder(self, folder_name):
         # Create the full path of the folder
-        self.folder_path = os.path.join(current_directory, folder_name)
+        self.folder_path = os.path.join(self.create_tmp_folder(), folder_name)
         # Check if the folder already exists
         if not os.path.exists(self.folder_path):
             # Create the folder if it doesn't exist
@@ -50,7 +54,7 @@ class ResponseParser:
                         folder_name = 'Test'
                         if folder_name_matches is not None and len(folder_name_matches) > 0:
                             folder_name = folder_name_matches[0][1] if folder_name_matches[0] is not None else 'Test'
-                    self.create_folder(folder_name)
+                    self.create_component_folder(folder_name)
                     response['folder_name'] = folder_name
                     for match in matches:
                         file_name_pattern = r'\n//\s(.*?)\n(.*)'

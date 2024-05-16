@@ -6,9 +6,9 @@ from pydantic import BaseModel
 from typing import Optional
 from starlette.middleware.cors import CORSMiddleware
 
-from response_parser import ResponseParser
-from chat_completion import ChatCompletion
-from context.ui_context import chat_history
+from ..modules.response_parser import ResponseParser
+from ..modules.chat_completion import ChatCompletion
+from ..context.ui_context import chat_history
 
 chat_summary = {}
 

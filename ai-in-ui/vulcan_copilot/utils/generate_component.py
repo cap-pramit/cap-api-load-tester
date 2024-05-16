@@ -6,8 +6,8 @@ import asyncio
 import contextvars
 import functools
 
-from context.ui_context import chat_history, base_instructions, element_samples
-from chat_completion import ChatCompletion
+from ..context.ui_context import chat_history, base_instructions, element_samples
+from ..modules.chat_completion import ChatCompletion
 
 def initialize_openai(api_key):
     openai.api_key = api_key

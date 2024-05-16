@@ -4,11 +4,12 @@ import asyncio
 import contextvars
 import functools
 
-from context.ui_context import base_instructions, element_samples, component_constructs
+from ..context.ui_context import base_instructions, element_samples, component_constructs
 
 class ChatCompletion:
     def __init__(self, response_file_name='model_response.txt'):
         openai.api_key = os.getenv('OPEN_AI_API_KEY')
+        self.response_file_name = response_file_name
         self.gpt_options = {
             "35turbo125": {
                 "model": "gpt-3.5-turbo-0125",
@@ -35,7 +36,12 @@ class ChatCompletion:
                 "tokens": 4096
             },
         }
-        self.response_file_name = response_file_name
+
+    def create_tmp_folder(self):
+        current_directory = os.getcwd()
+        folder_path = os.path.join(current_directory, "vulcan_copilot/tmp")
+        os.makedirs(folder_path, exist_ok=True)
+        return folder_path
 
     async def asyncio_to_thread(self, func, /, *args, **kwargs):
         loop = asyncio.get_running_loop()
@@ -70,9 +76,10 @@ class ChatCompletion:
 
     def write_response_to_file(self, content):
         try:
-            with open(self.response_file_name, 'w', encoding='utf-8') as file:
+            file_path = os.path.join(self.create_tmp_folder(), self.response_file_name)
+            with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(content)
-            return self.response_file_name
+            return file_path
         except Exception as e:
             print(f"Error writing model response to file: {str(e)}")
 
