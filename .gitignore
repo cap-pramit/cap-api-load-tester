@@ -1,2 +1,8 @@
 node_modules/
 reports/
+__pycache__/*
+ai-in-ui/__pycache__/*
+ai-in-ui/*/__pycache__/*
+*.pyc
+ai-in-ui/*.pyc
+ai-in-ui/model_response.txt

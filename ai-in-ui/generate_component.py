@@ -1,40 +1,13 @@
 import argparse
 import os
 import re
-import httpx
 import openai
 import asyncio
 import contextvars
 import functools
 
 from context.ui_context import chat_history, base_instructions, element_samples
-
-gpt_options = {
-    "35turbo125": {
-        "model": "gpt-3.5-turbo-0125",
-        "tokens": 4096
-    },
-    "35turbo301": {
-        "model": "gpt-3.5-turbo-0301",
-        "tokens": 4096
-    },
-    "35turbo613": {
-        "model": "gpt-3.5-turbo-0613",
-        "tokens": 4096
-    },
-    "35turbo16k": {
-        "model": "gpt-3.5-turbo-16k",
-        "tokens": 16385
-    },
-    "custom1": {
-        "model": "ft:gpt-3.5-turbo-0125:capillarytech:cap-ai-ui:9OjB8Ic7",
-        "tokens": 4096
-    },
-    "basic4o": {
-        "model": "gpt-4o",
-        "tokens": 4096
-    },
-}
+from chat_completion import ChatCompletion
 
 def initialize_openai(api_key):
     openai.api_key = api_key
@@ -85,30 +58,30 @@ async def asyncio_to_thread(func, /, *args, **kwargs):
     func_call = functools.partial(ctx.run, func, *args, **kwargs)
     return await loop.run_in_executor(None, func_call)
 
-async def generate_model_response(final_context, user_prompt = None):
-    try:
-        # gpt = gpt_options['35turbo125']
-        # gpt = gpt_options['custom1']
-        gpt = gpt_options['basic4o']
-        messages = final_context
-        if user_prompt is not None:
-            messages.append(user_prompt)
-        print('-------Prompts--------')
-        for msg in messages:
-            print('-------single prompt--------')
-            print(msg)
-            print('-------end of single prompt--------')
-        print('-------End of prompts--------')
-        chat_review = await asyncio_to_thread(openai.ChatCompletion.create,
-                                              model=gpt['model'],
-                                              temperature=0,
-                                              max_tokens=gpt['tokens'],
-                                              messages=messages)
-        model_response = chat_review.choices[0].message
-        return model_response['content']
-    except Exception as e:
-        print(f"Error generating response from gpt: {str(e)}")
-        raise e
+# async def generate_model_response(final_context, user_prompt = None):
+#     try:
+#         # gpt = gpt_options['35turbo125']
+#         # gpt = gpt_options['custom1']
+#         gpt = gpt_options['basic4o']
+#         messages = final_context
+#         if user_prompt is not None:
+#             messages.append(user_prompt)
+#         print('-------Prompts--------')
+#         for msg in messages:
+#             print('-------single prompt--------')
+#             print(msg)
+#             print('-------end of single prompt--------')
+#         print('-------End of prompts--------')
+#         chat_review = await asyncio_to_thread(openai.ChatCompletion.create,
+#                                               model=gpt['model'],
+#                                               temperature=0,
+#                                               max_tokens=gpt['tokens'],
+#                                               messages=messages)
+#         model_response = chat_review.choices[0].message
+#         return model_response['content']
+#     except Exception as e:
+#         print(f"Error generating response from gpt: {str(e)}")
+#         raise e
 
 async def instructions_training(file_path):
     try:
@@ -160,7 +133,7 @@ async def sample_data_training(file_path):
             #                               f"{sample_data}"
             # }
         ]
-        await generate_model_response(chat_history)
+        await chat_instance.get_model_response(final_context=chat_history)
         print("Sample data training completed.")
     except Exception as e:
         print(f"Error during sample data training: {e}")
@@ -248,7 +221,7 @@ async def generate_component(prompt_file, context):
                                                   f"{prompt}"
                     }
         print(f"Generating response from gpt...")
-        model_response = await generate_model_response(final_context, user_prompt)
+        model_response = await chat_instance.get_model_response(final_context=final_context, user_prompt=user_prompt)
         print(f"Response received!")
         if model_response is not None:
             file_content = re.sub(r'```jsx\n', '', model_response)
@@ -275,7 +248,7 @@ async def generate_component_2(prompt_file):
             "content": prompt,
         }
         print(f"Generating response from gpt...")
-        model_response = await generate_model_response(final_context, user_prompt)
+        model_response = await chat_instance.get_model_response(final_context=final_context, user_prompt=user_prompt)
         print(f"Response received!")
         if model_response is not None:
             file_content = re.sub(r'```jsx\n', '', model_response)
@@ -325,7 +298,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    initialize_openai(os.getenv('OPEN_AI_API_KEY'))
+    chat_instance = ChatCompletion()
 
     # asyncio.run(complete_initial_training(args.directory_path))
     # context = asyncio.run(generate_context(args.directory_path))
