@@ -1767,7 +1767,7 @@ training_data = [
     {
         "role": "user",
         "content": """
-            Create a redux state managed react component to list all the organization\'s custom fields in a tabular format. 
+            Create a vulcan specific redux state managed react component to list all the organization\'s custom fields in a tabular format. 
             Refer to the below custom field entity schema:
             {"entity":{"name":{"type":"string","defaultValue":""},"type":{"type":"string","defaultValue":""},"dataType":{"type":"enum","defaultValue":"","uiType":"dropdown","possibleValues":["boolean","integer","string","enum"]},"label":{"type":"string","defaultValue":""},"scope":{"type":"string","defaultValue":""},"defaultValue":{"type":"string","defaultValue":""},"phase":{"type":"string","defaultValue":""},"isDisabled":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isUpdatable":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPiiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPsiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"}},"action":{"api":"/v2/organization/customFields","method":"GET"}}'}
         """
@@ -2215,7 +2215,7 @@ chat_history = [
     {
         "role": "user",
         "content": """
-            Create a redux state managed react component to capture customer information and make an API call to save the customer details to server from the below specs:
+            Create a vulcan specific redux state managed react component to capture customer information and make an API call to save the customer details to server from the below specs:
             {
               "entity": {
                 "title": {
@@ -2491,7 +2491,7 @@ chat_history = [
     {
         "role": "user",
         "content": """
-            Create a redux state managed react component to list all the organization\'s custom fields in a tabular format. 
+            Create a vulcan specific redux state managed react component to list all the organization\'s custom fields in a tabular format. 
             Refer to the below custom field entity schema:
             {"entity":{"name":{"type":"string","defaultValue":""},"type":{"type":"string","defaultValue":""},"dataType":{"type":"enum","defaultValue":"","uiType":"dropdown","possibleValues":["boolean","integer","string","enum"]},"label":{"type":"string","defaultValue":""},"scope":{"type":"string","defaultValue":""},"defaultValue":{"type":"string","defaultValue":""},"phase":{"type":"string","defaultValue":""},"isDisabled":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isUpdatable":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPiiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"},"isPsiData":{"type":"boolean","defaultValue":false,"uiType":"checkbox"}},"action":{"api":"/v2/organization/customFields","method":"GET"}}'}
         """
@@ -2868,7 +2868,9 @@ base_instructions = [
             You are a an accomplished senior React UI web application developer who works for Capillary Technologies with extensive knowledge around React 16-18, Redux, Saga, Capillary UI library. 
             Your job is to write React components which strictly follow the Capillary UX design and can be integrated into the existing react projects seamlessly. 
             There can be 2 types of components:
-                1. Redux state-managed React component (Full redux connected component with state management using actions, selectors, reducer, saga and API call, apart from the main component file, style, Loadable and index files)
+                1. Redux state-managed React component (Full redux connected component with state management using actions, selectors, reducer, saga and API call, apart from the main component file, style, Loadable and index files), this can be further be of 2 types:
+                    a. Vulcan specific component
+                    b. Other component
                 2. Simple React component (Just the component file along with its style, Loadable and index files)
             Always carefully read the context and instructions provided to understand the requirements for these UI components.
         """
@@ -2880,7 +2882,7 @@ base_instructions = [
             MOST IMPORTANT: [These instructions should be strictly followed while generating the component for better accuracy, explain the reason in a comment in code if you decide to deviate from this]
             
             ### BEGIN generic instructions ###
-            These points will help you in writing the both types of component according to specifications:
+            Please follow these instructions and make sure you generate the component exactly as specified, this is needed for its seamless integration into Capillary projects:
             1. Library “moment” will be imported at the top of the component and used instead of the JavaScript Date class for date fields like “moment()”, do not format the moment object into string
             2. Wrap the entire generated component html inside the <PageTemplate> element imported like “import PageTemplate from ../../templates/PageTemplate” - always import this separately (do not forget this as this will give me the page layout styling)
             3. Wrap the <PageTemplate> element with `<div className={className}>` where className is received as a prop in the component, this is necessary for withStyles HOC to work in exporting the component along with included styles 
@@ -2889,20 +2891,22 @@ base_instructions = [
             6. Apply any custom styles as per user requirements to the component elements by appending or adding style attributes to the elements
             7. For select dropdown or radio button, default selected value in state should be the first option from the options list
             8. For date picker fields, default selected value in state should be current date, using "moment()"
-            9. All labels should be left aligned and have font size of 14px by default with style attribute,user request can override this
-            10. Apply default width 100% on all fields of form types UI
-            11. Every section heading will span the entire column with span = 24
-            12. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
-            13. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
-            13. Complete the implementation by creating all required files in following order:
+            9. For file upload type elements always add the styling required for dropzone in component style.js as per examples provided
+            10. All labels should be left aligned and have font size of 14px by default with style attribute,user request can override this
+            11. All columns in a form type component should be left aligned by default by putting style attributes on CapColumn unless asked otherwise
+            12. Apply default width 100% on all fields of form types UI by default
+            13. Every section heading will span the entire column with span = 24
+            14. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
+            14. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
+            16. Complete the implementation by creating all required files in following order:
                 a. api.js entry (just the API caller method needed, not full implementation) [Not needed for simple components, needed for redux state-managed components only]
                 b. constants.js [Not needed for simple components, needed for redux state-managed components only]
                 c. actions.js [Not needed for simple components, needed for redux state-managed components only]
                 d. reducer.js [Not needed for simple components, needed for redux state-managed components only]
                 e. selectors.js [Not needed for simple components, needed for redux state-managed components only]
                 f. saga.js [Not needed for simple components, needed for redux state-managed components only]
-                g. style.js [Not needed for simple components, needed for redux state-managed components only]
-                h. Component JS file [Needed for both types of components generated]
+                g. Component JS file [Needed for both types of components generated]
+                h. style.js [Not needed for simple components, needed for redux state-managed components only]
                 i. Loadable.js [Needed for both types of components generated]
                 j. index.js [Needed for both types of components generated]
                 k. routes.js entry [Not needed for simple components, needed for redux state-managed components only]
@@ -3207,12 +3211,20 @@ component_constructs = [
             ## BEGIN Style sheet example ##
             /* style.js */ 
             import { css } from 'styled-components';
-            /* sample styles for h3 element and children-routes class used in Component code */
+            import StyledVars from '@capillarytech/cap-ui-library/styled';
+            
+            // import all CAP sizes and colors required here from StyledVars
+            const {
+              CAP_BLACK,
+              CAP_SPACE_16,
+            } = StyledVars;
+            
             export default css`
-              /* left align div of type h2 */ 
-              div[type="h2"] {
-                text-align: left;
-                margin-bottom: 8px;
+              /* this is a default style for all form type components */ 
+              div[type="label2"] {
+                font-size: ${CAP_SPACE_16};
+                font-weight: 500;
+                color: ${CAP_BLACK};
               }
             `;
             ## END Style sheet example ##
@@ -3241,10 +3253,18 @@ component_constructs = [
         "role": "system",
         "content": """
             ## BEGIN Component index file sheet example ##
+            /*
+            For vulcan specific components use the below pattern
+            */
             /* index.js */ 
             import { withCustomAuthAndTranslations } from '@capillarytech/vulcan-react-sdk/utils';
             import LoadableComponent from './Loadable';
             export default withCustomAuthAndTranslations(LoadableComponent);
+            
+            /*
+            For other type of components use the below pattern
+            */
+            export { default } from './Loadable';
             ## END Component index file sheet example ##
         """
     },
@@ -3338,10 +3358,16 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is the default uiType]
                 1. For rendering Input box / Text box use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “event” parameter and set event.target.value to state
                 3. Import CapInput, CapLabel in the component when using this element
+                4. CapInput, apart from plain textbox supports the following types of input boxes too based on field config.`uiType`: 
+                    a. default -> <CapInput />
+                    b. textarea -> <CapInput.TextArea /> 
+                    c. search -> <CapInput.Search /> 
+                    d. number -> <CapInput.Number /> 
+                    These accept the same props as base CapInput element
             */
             <CapInput
               label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
@@ -3360,7 +3386,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `radio`]
                 1. For rendering Radio group / Radio buttons use this markup, also explain the logic for using this component using a comment in the code
                 2. For CapRadioGroup element add a new CapColumn inside with a span of 6 to accommodate the field label. This ensures that the label is displayed properly next to the radio buttons
                 3. For this element, onChange event handler function will take “event” parameter and set event.target.value to state
@@ -3373,16 +3399,30 @@ element_samples = [
                 style={}
             >
                 <CapRow>
-                  <CapColumn span={spanValue, depends on num of options}>
+                  /*
+                  if field config.layout = row
+                  */
+                  <CapColumn span={spanValue = 24 / (possibleValues.length+1)}>
                     <CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>
                   </CapColumn>
-                  <CapColumn span={spanValue}>
+                  <CapColumn span={spanValue = 24 / (possibleValues.length+1)}>
                     <CapRadio value="option1">option1</CapRadio>
                   </CapColumn>
-                  <CapColumn span={spanValue}>
+                  <CapColumn span={spanValue = 24 / (possibleValues.length+1)}>
                     <CapRadio value="option2">option2</CapRadio>
                   </CapColumn>
-                  {... rest of the options}
+                  /*
+                  else if field config.layout = column
+                  */
+                  <CapColumn span={24}> // span is 24 since we want to render in column layout
+                    <CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>
+                  </CapColumn>
+                  <CapColumn span={spanValue = 24 / possibleValues.length}>
+                    <CapRadio value="option1">option1</CapRadio>
+                  </CapColumn>
+                  <CapColumn span={spanValue = 24 / possibleValues.length}>
+                    <CapRadio value="option2">option2</CapRadio>
+                  </CapColumn>
                 </CapRow>
             </CapRadioGroup>
         """
@@ -3391,7 +3431,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `dropdown`]
                 1. For rendering Select / Dropdown use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “value” parameter and set it to state
                 3. Options for CapSelect would be of format [{value: "optionValue", label: "optionLabel"}] created from the possibleValues attribute of the given field schema
@@ -3415,7 +3455,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `multiselect`]
                 1. For rendering Multiselect / Tree selector use this markup, also explain the logic for using this component using a comment in the code
                 2. Options for CapMultiselect would be of format array of elements with id, value, title, key fields for tree data, created from the possibleValues attribute of the given field schema
                 3. Import CapMultiSelect, CapLabel in the component when using this element
@@ -3438,7 +3478,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `datepicker`]
                 1. For rendering Datepicker / Date use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “value” parameter and set it to state
                 3. Import CapDatePicker, CapLabel in the component when using this element
@@ -3458,7 +3498,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `icon`]
                 1. For rendering Icons and Symbols use this markup, also explain the logic for using this component using a comment in the code
             */
             <CapIcon
@@ -3522,7 +3562,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `checkbox`]
                 1. For rendering Checkboxes use this markup, also explain the logic for using this component using a comment in the code
                 2. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
             */
@@ -3540,7 +3580,7 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions:
+            Instructions: [This is for uiType `table`]
                 1. For rendering tables, use CapTable component from ui-library, also explain the logic for using this component using a comment in the code
                 2. generate field title and description from the attributes of the schema
                 3. each column width will be equal to Math.floor(100 / total number of fields), converted to a string with percentage(%) sign appended, ALWAYS append width to the columns of the table 
@@ -3620,6 +3660,84 @@ element_samples = [
             };
             const getCustomFieldsDataSource = () => { /* return customFields list JSON data from state variable */ };
             ## END pseudocode for table config rows and columns generation ##
+        """
+    },
+    {
+        "role": "system",
+        "content": """
+            /*
+            Instructions: [This is for uiType `fileUpload`]
+                1. For rendering File upload type field use this markup, also explain the logic for using this component using a comment in the code
+            */
+            <CapLabel className="" type="label1">
+                File Upload dummy component
+            </CapLabel>
+        """
+    },
+    {
+        "role": "system",
+        "content": """
+            /*
+            Instructions: [This is for showing file upload type field]
+                1. For showing single or multiple file upload type element, use this markup
+                2. Import Dropzone from the top in the component using `import Dropzone from 'react-dropzone';` // inform user to install react-dropzone npm module if not installed
+                3. Add dummy functions for `onDrop` and `onFileDialogCancel` for user to implement the feature of adding files and handling it
+                4. Add the style required for file upload dropzone to component style.s file
+            */
+            {/* BEGIN Drag and drop file uploader markup */}
+              <Dropzone
+                multiple
+                onDrop={(files) => { /* handle files dropped */ }}
+                onFileDialogCancel={() => { /* discard changes */ }}
+                accept=".csv" // types of file required to go here
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <div
+                    {...getRootProps()}
+                    data-testid="upload-promo-code-dropzone"
+                    className="file-drop-zone"
+                  >
+                    <input {...getInputProps()} />
+                    <div style={{ textAlign: 'center' }}>
+                      <div className="drop-zone-text">
+                        <CapHeading type="h7">
+                          Drop a file here
+                        </CapHeading>
+                        <CapHeading type="label6">
+                          OR
+                        </CapHeading>
+                        <CapButton type="secondary">
+                          Select from your computer
+                        </CapButton>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Dropzone>
+            {/* END Drag and drop file uploader */}
+            {/* BEGIN style.js additional changes for file upload, import required styled vars at the top of style.js */}
+            .file-drop-zone {
+                height: 223px;
+                border: 1px dashed ${CAP_G06};
+                &:focus {
+                  outline: none;
+                }
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            
+                .drop-zone-text {
+                  display: flex;
+                  flex-direction: column;
+                  gap: ${CAP_SPACE_16};
+            
+                  .drop-csv-title {
+                    color: ${CAP_SECONDARY.base};
+                  }
+                }
+            }
+            {/* END style.js additional changes for file upload */}
         """
     },
     {
