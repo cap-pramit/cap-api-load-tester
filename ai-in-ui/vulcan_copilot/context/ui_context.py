@@ -2917,7 +2917,7 @@ base_instructions = [
             import PropTypes from 'prop-types';
             import { createStructuredSelector } from 'reselect';
             import { connect } from 'react-redux';
-            import { Cap UI library elements as required } from '@capillarytech/cap-ui-library';
+            import { Cap UI library elements as required } from '@capillarytech/cap-ui-library'; // Import all elements used in component
             import { injectSaga, injectReducer, clearDataOnUnmount, sagaInjectorTypes, withStyles } from '@capillarytech/vulcan-react-sdk/utils';
             import style from './style';
             import * as actions from './actions';
@@ -3162,7 +3162,7 @@ component_constructs = [
             /*
             Instructions:
                 1. From saga, always call the success and failure from actions object, main API call should be made on Api object, follow the example strictly
-                2. Any processing needed on the api response as requested by the user should be done here in saga, for example extract data from API response like:
+                2. Any processing needed on the api response for listing OR requested by the user should be done here in saga, for example extract data from API response like:
                     const response = yield call(Api.fetchCustomFields, payload);
                     const data = response?.result?.data;
                     yield put(actions.fetchCustomFieldsSuccess(data));
@@ -3179,8 +3179,7 @@ component_constructs = [
                 // Call the API to fetch custom fields, getCustomFields is the API function
                 const response = yield call(Api.fetchCustomFields, payload);
                 /* Process response here to prepare the data in required format for component into customFields data */
-                // Dispatch success action with custom fields data
-                yield put(actions.fetchCustomFieldsSuccess(customFields));
+                yield put(actions.fetchCustomFieldsSuccess(response?.result?.data));
               } catch (error) {
                 // Dispatch failure action if there's an error
                 yield put(actions.fetchCustomFieldsFailure(error));
@@ -3342,6 +3341,7 @@ element_samples = [
             Instructions:
                 1. For rendering Input box / Text box use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “event” parameter and set event.target.value to state
+                3. Import CapInput, CapLabel in the component when using this element
             */
             <CapInput
               label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
@@ -3364,6 +3364,7 @@ element_samples = [
                 1. For rendering Radio group / Radio buttons use this markup, also explain the logic for using this component using a comment in the code
                 2. For CapRadioGroup element add a new CapColumn inside with a span of 6 to accommodate the field label. This ensures that the label is displayed properly next to the radio buttons
                 3. For this element, onChange event handler function will take “event” parameter and set event.target.value to state
+                4. Import CapRadioGroup, CapRadio, CapLabel in the component when using this element
             */
             <CapRadioGroup
                 value={stateVariableValue: string}
@@ -3394,6 +3395,7 @@ element_samples = [
                 1. For rendering Select / Dropdown use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “value” parameter and set it to state
                 3. Options for CapSelect would be of format [{value: "optionValue", label: "optionLabel"}] created from the possibleValues attribute of the given field schema
+                4. Import CapSelect, CapLabel in the component when using this element
             */
             <CapSelect
                 className={className}
@@ -3416,6 +3418,7 @@ element_samples = [
             Instructions:
                 1. For rendering Multiselect / Tree selector use this markup, also explain the logic for using this component using a comment in the code
                 2. Options for CapMultiselect would be of format array of elements with id, value, title, key fields for tree data, created from the possibleValues attribute of the given field schema
+                3. Import CapMultiSelect, CapLabel in the component when using this element
             */
             <CapMultiSelect
                 label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
@@ -3438,6 +3441,7 @@ element_samples = [
             Instructions:
                 1. For rendering Datepicker / Date use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “value” parameter and set it to state
+                3. Import CapDatePicker, CapLabel in the component when using this element
             */
             <CapDatePicker
               style={}

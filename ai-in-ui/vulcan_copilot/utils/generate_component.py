@@ -133,7 +133,7 @@ async def sample_data_training(file_path):
             #                               f"{sample_data}"
             # }
         ]
-        await chat_instance.get_model_response(final_context=chat_history)
+        await chat_instance.get_model_response(chat_history=chat_history)
         print("Sample data training completed.")
     except Exception as e:
         print(f"Error during sample data training: {e}")
@@ -221,7 +221,7 @@ async def generate_component(prompt_file, context):
                                                   f"{prompt}"
                     }
         print(f"Generating response from gpt...")
-        model_response = await chat_instance.get_model_response(final_context=final_context, user_prompt=user_prompt)
+        model_response = await chat_instance.get_model_response(chat_history=final_context, user_prompt=user_prompt)
         print(f"Response received!")
         if model_response is not None:
             file_content = re.sub(r'```jsx\n', '', model_response)
@@ -248,7 +248,7 @@ async def generate_component_2(prompt_file):
             "content": prompt,
         }
         print(f"Generating response from gpt...")
-        model_response = await chat_instance.get_model_response(final_context=final_context, user_prompt=user_prompt)
+        model_response = await chat_instance.get_model_response(chat_history=final_context, user_prompt=user_prompt)
         print(f"Response received!")
         if model_response is not None:
             file_content = re.sub(r'```jsx\n', '', model_response)

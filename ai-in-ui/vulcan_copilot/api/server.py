@@ -46,11 +46,13 @@ async def send_prompt(request: PromptRequest):
         session_id = request.session_id
         if session_id is None:
             session_id = generate_session_id()
+        elif len(session_id.strip()) == 0:
+            raise HTTPException(status_code=500, detail="Empty session_id sent!!")
         user_prompt = {
             "role": "user",
             "content": prompt,
         }
-        temp_context = chat_instance.get_context()
+        chat_messages = []
         prev_chat = []
         existing_session = False
         chat_count = 0
@@ -60,11 +62,11 @@ async def send_prompt(request: PromptRequest):
             prev_chat = chat_summary[session_id]['chat']
             chat_count = chat_summary[session_id]['count']
             folder_name = chat_summary[session_id]['folder']
-            temp_context += prev_chat
+            chat_messages += prev_chat
         else:
-            temp_context += chat_history
+            chat_messages += chat_history
         model_response = await chat_instance.get_model_response(
-            final_context=temp_context,
+            chat_history=chat_messages,
             user_prompt=user_prompt,
             existing_session=existing_session
         )

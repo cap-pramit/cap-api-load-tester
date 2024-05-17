@@ -49,14 +49,17 @@ class ChatCompletion:
         func_call = functools.partial(ctx.run, func, *args, **kwargs)
         return await loop.run_in_executor(None, func_call)
 
-    async def get_model_response(self, final_context=[], user_prompt=None, model_name='basic4o', existing_session=False):
+    async def get_model_response(self, chat_history=[], user_prompt=None, model_name='basic4o', existing_session=False):
         try:
             gpt = self.gpt_options[model_name]
-            messages = final_context
+            messages = self.get_context() + chat_history
             if user_prompt is not None:
                 messages.append(user_prompt)
                 if existing_session is True:
-                    user_prompt['content'] += '\nOnly modify the files needed to be changed, do not regenerate all the files unless specifically asked for.'
+                    user_prompt['content'] += """
+                        Only modify the files needed to be changed, do not regenerate all the files unless specifically asked for.
+                        Please make sure to import all the additional UI library elements required for the modifications done.
+                    """
             print('-------Prompts--------')
             for msg in messages:
                 print('-------single prompt--------')
@@ -90,7 +93,7 @@ class ChatCompletion:
             for part in initial_context:
                 if part['role'] == 'system':
                     system_context = \
-                        f"{system_context}\n\n\n" \
+                        f"{system_context}\n" \
                         f"{part['content']}"
             return [{
                 "role": "system",
