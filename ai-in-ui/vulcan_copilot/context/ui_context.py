@@ -2898,7 +2898,15 @@ base_instructions = [
             13. Every section heading will span the entire column with span = 24
             14. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
             14. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
-            16. Complete the implementation by creating all required files in following order:
+            15. CapInput supports the following types of input elements based on field config.`uiType` specified in given schema: 
+                    a. default / no specification -> <CapInput />
+                    b. textarea -> <CapInput.TextArea /> 
+                    c. search -> <CapInput.Search /> 
+                    d. number -> <CapInput.Number /> 
+                    These accept the same props as base CapInput element
+            16. If you use CapRadioGroup you should always import CapRadio along with it
+            17. Import all CAP* pattern variables you use in style.js file from StyledVars as per example given
+            18. Complete the implementation by creating all required files in following order:
                 a. api.js entry (just the API caller method needed, not full implementation) [Not needed for simple components, needed for redux state-managed components only]
                 b. constants.js [Not needed for simple components, needed for redux state-managed components only]
                 c. actions.js [Not needed for simple components, needed for redux state-managed components only]
@@ -3226,6 +3234,28 @@ component_constructs = [
                 font-weight: 500;
                 color: ${CAP_BLACK};
               }
+              {/* BEGIN style.js additional changes for file upload needed only when file upload element is used in component */}
+              .file-drop-zone {
+                height: 223px;
+                border: 1px dashed ${CAP_G06};
+                &:focus {
+                  outline: none;
+                }
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                .drop-zone-text {
+                  display: flex;
+                  flex-direction: column;
+                  gap: ${CAP_SPACE_16};
+            
+                  .drop-csv-title {
+                    color: ${CAP_SECONDARY.base};
+                  }
+                }
+              }
+              {/* END style.js additional changes for file upload */}
             `;
             ## END Style sheet example ##
         """
@@ -3362,12 +3392,6 @@ element_samples = [
                 1. For rendering Input box / Text box use this markup, also explain the logic for using this component using a comment in the code
                 2. For this element, onChange event handler function will take “event” parameter and set event.target.value to state
                 3. Import CapInput, CapLabel in the component when using this element
-                4. CapInput, apart from plain textbox supports the following types of input boxes too based on field config.`uiType`: 
-                    a. default -> <CapInput />
-                    b. textarea -> <CapInput.TextArea /> 
-                    c. search -> <CapInput.Search /> 
-                    d. number -> <CapInput.Number /> 
-                    These accept the same props as base CapInput element
             */
             <CapInput
               label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
@@ -3694,7 +3718,6 @@ element_samples = [
                 {({ getRootProps, getInputProps }) => (
                   <div
                     {...getRootProps()}
-                    data-testid="upload-promo-code-dropzone"
                     className="file-drop-zone"
                   >
                     <input {...getInputProps()} />
@@ -3715,29 +3738,6 @@ element_samples = [
                 )}
               </Dropzone>
             {/* END Drag and drop file uploader */}
-            {/* BEGIN style.js additional changes for file upload, import required styled vars at the top of style.js */}
-            .file-drop-zone {
-                height: 223px;
-                border: 1px dashed ${CAP_G06};
-                &:focus {
-                  outline: none;
-                }
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-            
-                .drop-zone-text {
-                  display: flex;
-                  flex-direction: column;
-                  gap: ${CAP_SPACE_16};
-            
-                  .drop-csv-title {
-                    color: ${CAP_SECONDARY.base};
-                  }
-                }
-            }
-            {/* END style.js additional changes for file upload */}
         """
     },
     {
