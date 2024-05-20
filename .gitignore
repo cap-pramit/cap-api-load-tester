@@ -6,4 +6,4 @@ ai-in-ui/*/__pycache__/*
 *.pyc
 ai-in-ui/*.pyc
 ai-in-ui/model_response.txt
-ai-in-ui/vulcan_copilot/tmp/*
+ai-in-ui/vulcan-copilot/tmp/*

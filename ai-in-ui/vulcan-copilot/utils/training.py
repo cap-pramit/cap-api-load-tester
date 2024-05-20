@@ -7,7 +7,7 @@ def create_folder():
     # Get the current working directory
     current_directory = os.getcwd()
     # Define the path of the folder in the parent directory where you want to create the file
-    folder_path = os.path.join(current_directory, "vulcan_copilot/tmp")
+    folder_path = os.path.join(current_directory, "vulcan-copilot/tmp")
     # Create the folder if it doesn't exist
     os.makedirs(folder_path, exist_ok=True)
     return folder_path

@@ -18,7 +18,7 @@ class ResponseParser:
 
     def create_tmp_folder(self):
         current_directory = os.getcwd()
-        folder_path = os.path.join(current_directory, "vulcan_copilot/tmp")
+        folder_path = os.path.join(current_directory, "vulcan-copilot/tmp")
         os.makedirs(folder_path, exist_ok=True)
         return folder_path
 
