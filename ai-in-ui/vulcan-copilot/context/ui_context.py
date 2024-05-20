@@ -2360,6 +2360,7 @@ chat_history = [
             import * as constants from './constants';
             import saga from './saga';
             import reducer from './reducer';
+            import messages from './messages';
             import { makeSelectCustomerInformation } from './selectors';
 
             import PageTemplate from '../../templates/PageTemplate';
@@ -2509,12 +2510,13 @@ chat_history = [
             4. reducer.js
             5. selectors.js
             6. saga.js
-            7. style.js
-            8. Component file
-            9. Loadable.js
-            10. index.js
-            11. routes.js
-            12. mfe-exposed-components.js
+            7. Component file
+            8. style.js
+            9. messages.js
+            10. Loadable.js
+            11. index.js
+            12. routes.js
+            13. mfe-exposed-components.js
 
             ### Step 1: Create the API call in `api.js`
             ```javascript
@@ -2670,19 +2672,7 @@ chat_history = [
             }
             ```
             
-            ### Step 7: Create the style in `style.js`
-            ```javascript
-            // style.js
-            import { css } from 'styled-components';
-            
-            export default css`
-              .custom-fields-list-table {
-                width: 100%;
-              }
-            `;
-            ```
-            
-            ### Step 8: Create the main component file
+            ### Step 7: Create the main component file
             ```javascript
             // CustomFieldsList.js
             import React, { useEffect, useState } from 'react';
@@ -2698,6 +2688,7 @@ chat_history = [
             import * as constants from './constants';
             import saga from './saga';
             import reducer from './reducer';
+            import messages from './messages';
             import { makeSelectCustomFields } from './selectors';
             import PageTemplate from '../../templates/PageTemplate';
             
@@ -2715,17 +2706,17 @@ chat_history = [
             
               const getCustomFieldsTableColumns = () => {
                 const columns = [
-                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">Name</CapHeading> },
-                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">Type</CapHeading> },
-                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">Data Type</CapHeading> },
-                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">Label</CapHeading> },
-                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">Scope</CapHeading> },
-                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">Default Value</CapHeading> },
-                  { dataIndex: 'phase', key: 'phase', title: <CapHeading type="h5">Phase</CapHeading> },
-                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">Disabled</CapHeading> },
-                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">Updatable</CapHeading> },
-                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">PII Data</CapHeading> },
-                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">PSI Data</CapHeading> },
+                  { dataIndex: 'name', key: 'name', title: <CapHeading type="h5">{intl.formatMessage(messages.name)}</CapHeading> },
+                  { dataIndex: 'type', key: 'type', title: <CapHeading type="h5">{intl.formatMessage(messages.type)}</CapHeading> },
+                  { dataIndex: 'dataType', key: 'dataType', title: <CapHeading type="h5">{intl.formatMessage(messages.dataType)}</CapHeading> },
+                  { dataIndex: 'label', key: 'label', title: <CapHeading type="h5">{intl.formatMessage(messages.label)}</CapHeading> },
+                  { dataIndex: 'scope', key: 'scope', title: <CapHeading type="h5">{intl.formatMessage(messages.scope)}</CapHeading> },
+                  { dataIndex: 'defaultValue', key: 'defaultValue', title: <CapHeading type="h5">{intl.formatMessage(messages.defaultValue)}</CapHeading> },
+                  { dataIndex: 'phase', key: 'phase', title: <CapHeading type="h5">{intl.formatMessage(messages.phase)}</CapHeading> },
+                  { dataIndex: 'isDisabled', key: 'isDisabled', title: <CapHeading type="h5">{intl.formatMessage(messages.disabled)}</CapHeading> },
+                  { dataIndex: 'isUpdatable', key: 'isUpdatable', title: <CapHeading type="h5">{intl.formatMessage(messages.updateable)}</CapHeading> },
+                  { dataIndex: 'isPiiData', key: 'isPiiData', title: <CapHeading type="h5">{intl.formatMessage(messages.isPiiData)}</CapHeading> },
+                  { dataIndex: 'isPsiData', key: 'isPsiData', title: <CapHeading type="h5">{intl.formatMessage(messages.isPsiData)}</CapHeading> },
                 ];
                 const columnWidth = `${Math.floor(100 / columns.length)}%`;
                 return columns.map(column => ({
@@ -2739,7 +2730,7 @@ chat_history = [
                   <PageTemplate>
                     <CapRow>
                       <CapColumn span={24}>
-                        <CapHeading type="h2">Organization's Custom Fields</CapHeading>
+                        <CapHeading type="h2">{intl.formatMessage(messages.pageHeading)}</CapHeading>
                       </CapColumn>
                     </CapRow>
                     <CapRow>
@@ -2799,7 +2790,37 @@ chat_history = [
             );
             ```
             
-            ### Step 9: Create Loadable.js
+            ### Step 8: Create the style in `style.js`
+            ```javascript
+            // style.js
+            import { css } from 'styled-components';
+            
+            export default css`
+              .custom-fields-list-table {
+                width: 100%;
+              }
+            `;
+            ```
+            
+            ### Step 9: Create the messages in `messages.js`
+            ```javascript
+            // messages.js
+            import { defineMessages } from 'react-intl';
+            export const scope = 'appName.components.customFieldsList';
+            
+            export default defineMessages({
+                fieldName1: {
+                    id: `${scope}.fieldName1`,
+                    defaultMessage: 'Field Name 1',
+                },
+                fieldName2: {
+                    id: `${scope}.fieldName2`,
+                    defaultMessage: 'Field Name 2',
+                },
+            });
+            ```
+            
+            ### Step 10: Create Loadable.js
             ```javascript
             // Loadable.js
             import React, { Suspense } from 'react';
@@ -2815,7 +2836,7 @@ chat_history = [
             );
             ```
             
-            ### Step 10: Create index.js
+            ### Step 11: Create index.js
             ```javascript
             // index.js
             import { withCustomAuthAndTranslations } from '@capillarytech/vulcan-react-sdk/utils';
@@ -2824,7 +2845,7 @@ chat_history = [
             export default withCustomAuthAndTranslations(LoadableComponent);
             ```
             
-            ### Step 11: Add entry in routes.js
+            ### Step 12: Add entry in routes.js
             ```javascript
             // routes.js
             import { lazy } from 'react';
@@ -2850,7 +2871,7 @@ chat_history = [
             export default routes;
             ```
             
-            ### Step 12: Add entry in mfe-exposed-components.js
+            ### Step 13: Add entry in mfe-exposed-components.js
             ```javascript
             // mfe-exposed-components.js
             module.exports = {
@@ -2898,7 +2919,7 @@ base_instructions = [
             13. Every section heading will span the entire column with span = 24
             14. Checkboxes do not have label attribute, instead, labels are the content of the Checkbox tags
             14. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
-            15. CapInput supports the following types of input elements based on field config.`uiType` specified in given schema: 
+            15. CapInput supports the following types of input elements based on field config. Type of input box to be rendered depends on `uiType` attribute specified in given schema: 
                     a. default / no specification -> <CapInput />
                     b. textarea -> <CapInput.TextArea /> 
                     c. search -> <CapInput.Search /> 
@@ -2906,7 +2927,8 @@ base_instructions = [
                     These accept the same props as base CapInput element
             16. If you use CapRadioGroup you should always import CapRadio along with it
             17. Import all CAP* pattern variables you use in style.js file from StyledVars as per example given
-            18. Complete the implementation by creating all required files in following order:
+            18. For all labels in the Component, use messages.js for internationalization (I18N) support by using {intl.formatMessage(messages.fieldName)} for all fields and labels mandatorily for all types of components generated
+            19. Complete the implementation by creating all required files in following order:
                 a. api.js entry (just the API caller method needed, not full implementation) [Not needed for simple components, needed for redux state-managed components only]
                 b. constants.js [Not needed for simple components, needed for redux state-managed components only]
                 c. actions.js [Not needed for simple components, needed for redux state-managed components only]
@@ -2915,10 +2937,11 @@ base_instructions = [
                 f. saga.js [Not needed for simple components, needed for redux state-managed components only]
                 g. Component JS file [Needed for both types of components generated]
                 h. style.js [Not needed for simple components, needed for redux state-managed components only]
-                i. Loadable.js [Needed for both types of components generated]
-                j. index.js [Needed for both types of components generated]
-                k. routes.js entry [Not needed for simple components, needed for redux state-managed components only]
-                l. mfe-exposed-components.js [Needed for both types of components generated]
+                i. messages.js [Needed for both types of components generated]
+                j. Loadable.js [Needed for both types of components generated]
+                k. index.js [Needed for both types of components generated]
+                l. routes.js entry [Not needed for simple components, needed for redux state-managed components only]
+                m. mfe-exposed-components.js [Needed for both types of components generated]
             ### END generic instructions ###    
             
             ### BEGIN redux state-managed component specifications ###
@@ -2936,6 +2959,7 @@ base_instructions = [
             import * as constants from './constants';
             import saga from './saga';
             import reducer from './reducer';
+            import messages from './messages';
             import { makeSelectCustomFields } from './selectors';
             import PageTemplate from '../../templates/PageTemplate';
             
@@ -3258,6 +3282,26 @@ component_constructs = [
               {/* END style.js additional changes for file upload */}
             `;
             ## END Style sheet example ##
+        """
+    },
+    {
+        "role": "system",
+        "content": """
+            {/* BEGIN messages.js i18n messages list to be used in component */}
+            import { defineMessages } from 'react-intl';
+            export const scope = 'appName.components.customFieldsList';
+            
+            export default defineMessages({
+              tab1: {
+                id: `${scope}.tab1`,
+                defaultMessage: 'Tab 1',
+              },
+              tab2: {
+                id: `${scope}.tab2`,
+                defaultMessage: 'Tab 2',
+              },
+            });
+            {/* END messages.js i18n messages list to be used in component */}
         """
     },
     {
@@ -3690,18 +3734,6 @@ element_samples = [
         "role": "system",
         "content": """
             /*
-            Instructions: [This is for uiType `fileUpload`]
-                1. For rendering File upload type field use this markup, also explain the logic for using this component using a comment in the code
-            */
-            <CapLabel className="" type="label1">
-                File Upload dummy component
-            </CapLabel>
-        """
-    },
-    {
-        "role": "system",
-        "content": """
-            /*
             Instructions: [This is for showing file upload type field]
                 1. For showing single or multiple file upload type element, use this markup
                 2. Import Dropzone from the top in the component using `import Dropzone from 'react-dropzone';` // inform user to install react-dropzone npm module if not installed
@@ -3738,6 +3770,36 @@ element_samples = [
                 )}
               </Dropzone>
             {/* END Drag and drop file uploader */}
+        """
+    },
+    {
+        "role": "system",
+        "content": """
+            /*
+            Instructions: [This is for showing any field in View / Preview mode]
+                1. Import CapRow and CapColumn elements from ui library if not imported already
+                2. Fields can be in row or column layout based on user preference
+            */
+            {/* BEGIN markup for view mode in row layout */}
+            <CapRow>
+                <CapColumn span={12} className="read-only-field-name">
+                    <CapLabel type="label2">{label}</CapLabel>
+                </CapColumn>
+                <CapColumn span={12} className="read-only-field-value">
+                    {value}
+                </CapColumn>
+            </CapRow>
+            {/* END markup for view mode in row layout */}
+            {/* BEGIN markup for view mode in column layout */}
+            <CapRow>
+                <CapColumn span={24} className="read-only-field-name">
+                    <CapLabel type="label2">{label}</CapLabel>
+                </CapColumn>
+                <CapColumn span={24} className="read-only-field-value">
+                    {value}
+                </CapColumn>
+            </CapRow>
+            {/* END markup for view mode in column layout */}
         """
     },
     {
