@@ -22,13 +22,18 @@ class Copilot:
             prev_chat = self.chat_summary[session_id]['chat']
             chat_count = self.chat_summary[session_id]['count']
             folder_name = self.chat_summary[session_id]['folder']
+            last_item_in_chat = prev_chat[-1]
+            if last_item_in_chat is not None and last_item_in_chat['role'] == 'user':
+                user_prompt['content'] = last_item_in_chat['content'] + f"\n{prompt}"
+                prev_chat = prev_chat[:-1]
             chat_messages += prev_chat
         else:
             chat_messages += chat_history
         model_response, summary_available = await self.chat_instance.get_model_response(
             chat_history=chat_messages,
             user_prompt=user_prompt,
-            existing_session=existing_session
+            existing_session=existing_session,
+            chat_count=chat_count
         )
         file_name = self.chat_instance.write_response_to_file(model_response)
         parser = ResponseParser(file_name, summary_available)
