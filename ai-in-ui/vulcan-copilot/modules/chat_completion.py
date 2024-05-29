@@ -80,7 +80,8 @@ class ChatCompletion:
                 messages.append(user_prompt)
             summary_needed = self.is_summarization_needed(gpt, messages)
             if summary_needed:
-                messages[-1]['content'] += "After making the changes, please summarize the chat till this point into a section named `Summarization` to preserve context and take this interaction forward."
+                messages[-1]['content'] += "After making the changes, please summarize the chat till this point into a section named `Summarization` as a " \
+                                           "set of instructions that I have provided to you"
             self.log_prompts(messages)
             chat_review = await self.asyncio_to_thread(openai.ChatCompletion.create,
                                                   model=gpt['model'],
