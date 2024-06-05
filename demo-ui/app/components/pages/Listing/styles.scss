@@ -1,0 +1,18 @@
+#listings-table {
+    cursor: pointer;
+
+    tr:hover {
+        filter: brightness(98%);
+        transition: filter 0.3s ease;
+    }
+
+    td {
+        .cap-row-v2 {
+            .cap-column-v2 {
+                .cap-icon-v2-check-filled {
+                    vertical-align: super;
+                }
+            }
+        }
+    }
+}
