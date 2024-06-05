@@ -1,0 +1,21 @@
+{
+  "name": "component name",
+  "type": "type of component, one of Form, List view, Table view",
+  "stateVariable": "structure of data to be prepared in state for component",
+  "sections": {
+    "name": "section name / label, no section heading if empty, section heading should be CapHeading",
+    "specifications": "section specific details to keep in mind and instructions to generate the section heading or section content accordingly, contains information regarding section layout, overall style, heading",
+    "fieldLayout": "row / column, if value is row, then each field becomes a CapRow where CapLabel is inside CapColumn with span 10 and Cap field element is inside CapColumn with span 14, for value column, ignore this parameter",
+    "fields": {
+      "description": "fields / content to be generated for each section",
+      "schema": {
+        "label": "field label, goes in label attribute for all cap elements except CapRadioGroup (goes into children as a capLabel element there), or when field layout is ",
+        "stateVariableField": "field of stateVariable to be populated by this",
+        "type": "field type, one of input, select, radio, date, button, multiselect",
+        "options": "options for the field, only applicable to select, multiselect and radio elements, options should be prepared as per their schema definition in ui_library_schema_specifications",
+        "style": "field specific styles to apply",
+        "handlerDetails": "only applicable to buttons, instruction for button click handler"
+      }
+    }
+  }
+}

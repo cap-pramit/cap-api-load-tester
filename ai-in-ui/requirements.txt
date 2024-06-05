@@ -1,0 +1,6 @@
+openai==0.28
+tiktoken==0.7.0
+fastapi
+uvicorn
+httpx
+contextvars

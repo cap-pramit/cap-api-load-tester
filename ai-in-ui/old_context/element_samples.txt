@@ -1,0 +1,115 @@
+Row / Horizontal layout -
+<CapRow className="rowClassName" style={{}}>{...children}</CapRow>
+
+Column / Vertical layout -
+<CapColumn className="columnClassName" style={{}} span={spanValue}>{...children}</CapColumn>
+spanValue is an integer that can range between 1-24 distributed equally depending on number of columns required in the row, formula = Math.floor(24/num_of_columns)
+
+Input box / Text box -
+<CapInput
+  label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
+  placeholder={placeholderText}
+  value={stateVariableValue}
+  onBlur={onClickOutside event handler function (e) => {do something}}
+  onChange={onChange event handler function (e) => {set event.target.value to stateVariableValue}}
+  className="inputClassName"
+  onPressEnter={onPressEnter event handler function (e) => {do something}}
+  disabled={disabled boolean}
+  style={}
+/>
+
+Radio group / Radio buttons -
+<CapRadioGroup
+    value={stateVariableValue}
+    onChange={onChange event handler function (e) => {set event.target.value to stateVariableValue}}
+    disabled={disabled boolean}
+    style={}
+>
+    <CapRow>
+      <CapColumn span={spanValue, depends on num of options}>
+        <CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>
+      </CapColumn>
+      <CapColumn span={spanValue}>
+        <CapRadio value="option1">option1</CapRadio>
+      </CapColumn>
+      <CapColumn span={spanValue}>
+        <CapRadio value="option2">option2</CapRadio>
+      </CapColumn>
+      {... rest of the options}
+    </CapRow>
+</CapRadioGroup>
+
+Select / Dropdown -
+<CapSelect
+    className={className}
+    showArrow={showArrow boolean, display arrow}
+    showSearch={showSearch boolean, search feature enable / disable}
+    label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
+    placeholder={placeholder}
+    options={options, array like [{value: "optionValue", label: "optionLabel"}], prepare the data from options given in request}
+    value={stateVariableValue}
+    style={}
+    onChange={onChange event handler function (value) => {set value to stateVariableValue}}
+    disabled={disabled boolean}
+/>
+
+Multiselect / Tree selector -
+<CapMultiSelect
+    label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
+    getPopupContainer={trigger => trigger.parentElement}
+    placeholder={placeholderText}
+    searchPlaceholder={searchPlaceholderText}
+    closeText={closeText}
+    selectText={selectText}
+    treeData={options array of elements with id, value, title, key fields for tree data, prepare the data from options given in request}
+    onSelect={onSelect item event handler function (value) => {set value to stateVariableValue of appliedKeys}}
+    appliedKeys={stateVariableValue, list of selected keys from tree data options}
+    searchKey={searchKeyText}
+/>
+
+Datepicker / Date -
+<CapDatePicker
+  style={}
+  label={<CapLabel type="label2" style={{textAlign: 'left'}}>label</CapLabel>}
+  value={stateVariableValue}
+  onChange={onChange event handler function (value) => {set value to state variable}}
+  placeholder={placeholderText}
+  format={dateFormatString}
+  disabled={disabled boolean}
+/>
+
+Icon -
+<CapIcon
+  type={iconType}
+  size="s|m|l"
+  className={classnames(
+    'tooltip-info-icon-select',
+    additionalIconClassName,
+  )}
+/>
+
+Tooltip -
+<CapTooltip title={tooltipText} placement={tooltipPlacement}>{...children}</CapToolTip>
+
+Heading / Header / Section heading -
+<CapHeading
+    type={one among h1,h2,h3,h4,h5 values}
+    className={classnames(
+      className,
+      'truncate-text',
+      'tooltip-criteria-selected-value',
+      additionalClassName,
+    )}
+>
+    {label / heading value}
+</CapHeading>
+
+Button / Action button -
+<CapButton
+    className={className}
+    type={isDisabled ? 'secondary' : 'primary'}
+    disabled={isDisabled}
+    onClick={triggerAction handler function ()=>{}}
+>
+    {label}
+</CapButton>

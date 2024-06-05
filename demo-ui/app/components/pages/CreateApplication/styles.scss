@@ -1,0 +1,77 @@
+@import '~@capillarytech/cap-ui-library/styles/_variables';
+
+.create-application-container {
+  .create-application-header {
+    margin-left: $CAP_SPACE_20;
+    font-size: $CAP_SPACE_20;
+  }
+
+  .accordian-content {
+    .app-name-verification {
+      margin-top: $CAP_SPACE_32;
+      margin-left: $CAP_SPACE_12;
+    }
+    .app-name-verification-no-btn {
+      margin-top: $CAP_SPACE_32;
+      margin-left: $CAP_SPACE_08;
+    }
+    .validate-app-name-btn {
+      margin-top: $CAP_SPACE_24;
+      float: inline-end;
+      min-width: 7rem;
+    }
+  }
+
+  .validate-translation-api-btn {
+    margin-top: $CAP_SPACE_24;
+    float: inline-end;
+  }
+
+  .validate-translation-api-btn-intouch {
+    float: inline-end;
+  }
+
+  .application-detail-row {
+    margin-bottom: $CAP_SPACE_16;
+  }
+
+  .radio-group-app-type,
+  .radio-group-app-auth-type,
+  .radio-group-app-translation-type,
+  .radio-group-app-enable-auth,
+  .radio-group-app-otp-identifier,
+  .radio-group-app-enable-translation,
+  .radio-group-app-api-method {
+    display: flex;
+    align-items: center;
+    margin-top: $CAP_SPACE_08;
+
+    .app-type-info {
+      vertical-align: text-bottom;
+    }
+  }
+  .i18n-locale-info {
+    margin-left: $CAP_SPACE_04;
+    vertical-align: text-bottom;
+  }
+  .create-app-steps-accordian {
+    max-height: calc(100vh - 14.285rem);
+    overflow-y: scroll;
+    margin-top: $CAP_SPACE_12;
+    margin-left: $CAP_SPACE_44;
+    .accordian-content {
+      margin-left: $CAP_SPACE_36;
+      width: 67%;
+    }
+    .accordian-header {
+      .cap-header-v2-title {
+        font-size: 18px;
+      }
+    }
+  }
+  .create-edit-application-btn {
+    position: fixed;
+    bottom: $CAP_SPACE_19;
+    margin-left: $CAP_SPACE_56;
+  }
+}

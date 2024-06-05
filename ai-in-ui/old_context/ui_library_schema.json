@@ -1,0 +1,116 @@
+[{
+  "htmlElement": "<div className=\"row\">",
+  "replaceWith": "CapRow",
+  "elementSpecification": "row layout element, each row can have maximum of 24 columns in grid, add style as per requirements",
+  "children": "CapColumn",
+  "attributes": [{
+    "name": "style",
+    "value": "{{marginTop: '8px', marginBottom: '8px'}}"
+  }]
+}, {
+  "htmlElement": "<div className=\"column\">",
+  "replaceWith": "CapColumn",
+  "elementSpecification": "column layout element, each row can have maximum of 24 columns in grid, add style as per requirements",
+  "children": "any other type of element",
+  "attributes": [{
+    "name": "style",
+    "value": "{{marginLeft: '16px', marginRight: '16px'}}"
+  }, {
+    "name": "span",
+    "elementSpecification": "determines how many columns an element spans in the row",
+    "value": "24 / num_of_columns_in_given_layout [can be overridden as per user prompt at top]",
+    "valueRange": { "min": 1, "max": 24 }
+  }]
+}, {
+  "htmlElement": "<input type=\"text\">",
+  "replaceWith": "CapInput",
+  "elementSpecification": "text input box, add style as per requirements",
+  "children": null,
+  "attributes": [{
+    "name": "value",
+    "value": "state variable field"
+  }, {
+    "name": "label",
+    "value": "label of the field"
+  }, {
+    "name": "onChange",
+    "elementSpecification": "value change handler function",
+    "value": "(event) => {set state with event.target.value}"
+  }]
+}, {
+  "htmlElement": "<input type=\"radio\">",
+  "replaceWith": "CapRadioGroup",
+  "elementSpecification": "radio button group, select first option value by default, row layout, with 1 column for label and 1 column each for options",
+  "children": "Example: <CapRow><CapColumn>label></CapColumn>...1 CapColumn each for each of the options</CapRow>",
+  "attributes": [{
+    "name": "value",
+    "value": "state variable field"
+  }, {
+    "name": "onChange",
+    "elementSpecification": "value change handler function",
+    "value": "(event) => {set state with event.target.value}"
+  }]
+}, {
+  "htmlElement": "<option>",
+  "replaceWith": "CapRadio",
+  "elementSpecification": "radio button single",
+  "children": "name of the option",
+  "attributes": [{
+    "name": "value",
+    "value": "name of the option in lowercase"
+  }]
+}, {
+  "htmlElement": "<input type=\"select\"> | <select>",
+  "replaceWith": "CapSelect",
+  "elementSpecification": "select dropdown, select first option value by default, add style as per requirements",
+  "children": null,
+  "attributes": [{
+    "name": "value",
+    "value": "state variable field"
+  }, {
+    "name": "label",
+    "value": "label of the field"
+  }, {
+    "name": "style",
+    "value": "{{width: '250px'}}"
+  }, {
+    "name": "options",
+    "value": "array of options having label and value for the dropdown items"
+  }, {
+    "name": "onChange",
+    "elementSpecification": "value change handler function",
+    "value": "(value) => {set state with value}"
+  }]
+}, {
+  "htmlElement": "<input type=\"date\"> | <date>",
+  "replaceWith": "CapDatePicker",
+  "elementSpecification": "date input box, add style as per requirements",
+  "children": null,
+  "attributes": [{
+    "name": "defaultValue",
+    "value": "state variable field"
+  }, {
+    "name": "label",
+    "value": "label of the field"
+  }, {
+    "name": "style",
+    "value": "{{width: '250px'}}"
+  }, {
+    "name": "onChange",
+    "elementSpecification": "value change handler function",
+    "value": "(value) => {set state with value}"
+  }]
+}, {
+  "htmlElement": "<button>",
+  "replaceWith": "CapButton",
+  "elementSpecification": "action button, add style as per requirements",
+  "children": "label of the button",
+  "attributes": [{
+    "name": "type",
+    "value": "secondary OR primary"
+  }, {
+    "name": "onClick",
+    "elementSpecification": "action to be executed on button click",
+    "value": "props or state function passed as action to component props OR clear the form data"
+  }]
+}]

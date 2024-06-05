@@ -1,0 +1,21 @@
+MOST IMPORTANT: [These points should be strictly adhered to while generating the component, treat it as a cheatsheet to help you generate components accurately]
+
+1. Library “moment” will be imported at the top of the component and used instead of the JavaScript Date class for date fields like “moment()”, do not format the moment object into string
+2. Wrap the entire generated component html inside the <PageTemplate> element imported like “import PageTemplate from ../../templates/PageTemplate” - always import this separately (do not forget this as this will give me the page layout styling)
+3. Types of form elements to be replaced with custom UI library elements and their specifications are provided along with ui_library_schema JSON (all these elements should be imported from @capillarytech/cap-ui-library package) - always import this separately
+4. MANDATORY to import all elements matching the pattern /Cap(.*)/ from package "@capillarytech/cap-ui-library".
+5. Generate the entire component carefully, add style attributes to elements where they are specified
+6. For CapRadioGroup element add a new CapColumn inside with a span of 6 to accommodate the field label. This ensures that the label is displayed properly next to the radio buttons
+7. CapDatePicker, CapSelect elements’ onChange event handler function will take “value” parameter and set it to state
+8. CapInput, CapRadioGroup elements’ onChange event handler function will take “event” parameter and set event.target.value to state
+9. For CapRow and CapColumn elements, always remember to apply their required “style” and “span” attributes as per specifications, DO NOT IGNORE THEIR STYLES
+10. Apply any custom styles as per user requirements to the component elements by appending or adding style attributes to the elements
+11. For select dropdown or radio button, first option should be selected by default
+12. For date picker, default selected value should be current date, using "moment()"
+13. All labels should be left aligned and have font size of 14px by default with style attribute,user request can override this
+14. If any HTML element does not match the given specifications of cap-ui-library keep it in HTML format and style it with CSS as per need
+15. options for CapSelect would be of format [{value: "optionValue", label: "optionLabel"}]
+16. options for CapMultiselect would be of format array of elements with id, value, title, key fields for tree data
+17. apply default style width 100% on all field elements of form type UI
+18. Every section heading will span the entire column with span = 24
+19. Generate the full component with all the fields as requested, DO NOT SKIP any fields mentioned in the spec
